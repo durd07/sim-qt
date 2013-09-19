@@ -1,546 +1,537 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>407</width>
-    <height>268</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Sim Control</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+  <class>MainWindow</class>
+  <widget class="QMainWindow" name="MainWindow">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>407</width>
+        <height>268</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Sim Control</string>
+    </property>
+    <widget class="QWidget" name="centralwidget">
+      <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+          <widget class="QFrame" name="frame">
+            <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+            </property>
+          </widget>
+        </item>
+      </layout>
+    </widget>
+    <widget class="QMenuBar" name="menubar">
+      <property name="geometry">
+        <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>407</width>
+          <height>27</height>
+        </rect>
       </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+      <widget class="QMenu" name="menuFile">
+        <property name="title">
+          <string>File</string>
+        </property>
+        <addaction name="actionNewEmptySession"/>
+        <addaction name="actionNewSessionFromScript"/>
+        <addaction name="actionOpenCheckpoint"/>
+        <addaction name="actionSaveCheckpoint"/>
+        <addaction name="separator"/>
+        <addaction name="actionAppendFromScript"/>
+        <addaction name="actionAppendFromCheckpoint"/>
+        <addaction name="separator"/>
+        <addaction name="actionLoadPresistentState"/>
+        <addaction name="actionSavePresistentState"/>
+        <addaction name="separator"/>
+        <addaction name="actionPythonFile"/>
+        <addaction name="separator"/>
+        <addaction name="actionCreateWorkspace"/>
+        <addaction name="actionChangeWorkspace"/>
+        <addaction name="separator"/>
+        <addaction name="actionExit"/>
+      </widget>
+      <widget class="QMenu" name="menuEdit">
+        <property name="title">
+          <string>Edit</string>
+        </property>
+        <addaction name="actionPreferences"/>
+      </widget>
+      <widget class="QMenu" name="menuRun">
+        <property name="title">
+          <string>Run</string>
+        </property>
+        <addaction name="actionRunForward"/>
+        <addaction name="actionStop"/>
+        <addaction name="actionRunReverse"/>
+        <addaction name="separator"/>
+        <addaction name="actionMultithreadingEnabled"/>
+        <addaction name="actionReverseExecutionEnabled"/>
+        <addaction name="actionClearInputRecording"/>
+      </widget>
+      <widget class="QMenu" name="menuDebug">
+        <property name="title">
+          <string>Debug</string>
+        </property>
+        <addaction name="actionDisassembly"/>
+        <addaction name="actionStackTrace"/>
+        <addaction name="actionSourceView"/>
+        <addaction name="actionCPURegisters"/>
+        <addaction name="actionDeviceRegisters"/>
+        <addaction name="actionMemoryContents"/>
+      </widget>
+      <widget class="QMenu" name="menuTools">
+        <property name="title">
+          <string>Tools</string>
+        </property>
+        <addaction name="actionCommandLineWindow"/>
+        <addaction name="actionCommandBrowser"/>
+        <addaction name="actionHapsBrowser"/>
+        <addaction name="actionObjectBrowser"/>
+        <addaction name="atcionConfigurationBrowser"/>
+        <addaction name="actionNewStatisticsPlot"/>
+        <addaction name="actionMemoryMappingsBrowser"/>
+      </widget>
+      <widget class="QMenu" name="menuWindow">
+        <property name="title">
+          <string>Window</string>
+        </property>
+        <addaction name="actionMinimizeAllConsoles"/>
+        <addaction name="actionRestoreAllConsoles"/>
+        <addaction name="separator"/>
+        <addaction name="actionOpenAllConsoles"/>
+        <addaction name="actionCloseAllConsoles"/>
+        <addaction name="separator"/>
+        <addaction name="actionNoConsoleWindows"/>
+      </widget>
+      <widget class="QMenu" name="menuHelp">
+        <property name="title">
+          <string>Help</string>
+        </property>
+        <addaction name="actionContents"/>
+        <addaction name="separator"/>
+        <addaction name="actionGettingStarted"/>
+        <addaction name="separator"/>
+        <addaction name="actionTechnicalSupport"/>
+        <addaction name="actionBugReportForum"/>
+        <addaction name="actionUserRegistration"/>
+        <addaction name="actionVirtutechWebsite"/>
+        <addaction name="separator"/>
+        <addaction name="actionLicense"/>
+        <addaction name="actionAbout"/>
+      </widget>
+      <addaction name="menuFile"/>
+      <addaction name="menuEdit"/>
+      <addaction name="menuRun"/>
+      <addaction name="menuDebug"/>
+      <addaction name="menuTools"/>
+      <addaction name="menuWindow"/>
+      <addaction name="menuHelp"/>
+    </widget>
+    <widget class="QStatusBar" name="statusBar"/>
+    <widget class="QToolBar" name="toolBar">
+      <property name="windowTitle">
+        <string>toolBar</string>
       </property>
-     </widget>
-    </item>
-   </layout>
+      <attribute name="toolBarArea">
+        <enum>TopToolBarArea</enum>
+      </attribute>
+      <attribute name="toolBarBreak">
+        <bool>false</bool>
+      </attribute>
+      <addaction name="actionNewSessionFromScript"/>
+      <addaction name="actionOpenCheckpoint"/>
+      <addaction name="actionSaveCheckpoint"/>
+      <addaction name="separator"/>
+      <addaction name="actionRunReverse"/>
+      <addaction name="actionStop"/>
+      <addaction name="actionRunForward"/>
+      <addaction name="separator"/>
+      <addaction name="actionMultithreadingEnabled"/>
+      <addaction name="actionReverseExecutionEnabled"/>
+    </widget>
+    <action name="actionNewEmptySession">
+      <property name="text">
+        <string>New Empty Session</string>
+      </property>
+      <property name="menuRole">
+        <enum>QAction::ApplicationSpecificRole</enum>
+      </property>
+    </action>
+    <action name="actionNewSessionFromScript">
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/add.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/add.png</iconset>
+      </property>
+      <property name="text">
+        <string>New session from script</string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+N</string>
+      </property>
+      <property name="visible">
+        <bool>true</bool>
+      </property>
+      <property name="menuRole">
+        <enum>QAction::TextHeuristicRole</enum>
+      </property>
+    </action>
+    <action name="actionOpenCheckpoint">
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-open.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-open.png</iconset>
+      </property>
+      <property name="text">
+        <string>Open Checkpoint...                       </string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+O</string>
+      </property>
+    </action>
+    <action name="actionSaveCheckpoint">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-save.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-save.png</iconset>
+      </property>
+      <property name="text">
+        <string>Save Checkpoint...                        </string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+S</string>
+      </property>
+    </action>
+    <action name="actionAppendFromScript">
+      <property name="text">
+        <string>Append from Script...</string>
+      </property>
+    </action>
+    <action name="actionAppendFromCheckpoint">
+      <property name="text">
+        <string>Append from Checkpoint...</string>
+      </property>
+    </action>
+    <action name="actionLoadPresistentState">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Load Presistent State...</string>
+      </property>
+    </action>
+    <action name="actionSavePresistentState">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Save Persistent State...</string>
+      </property>
+    </action>
+    <action name="actionPythonFile">
+      <property name="text">
+        <string>Run Python File...</string>
+      </property>
+    </action>
+    <action name="actionCreateWorkspace">
+      <property name="text">
+        <string>Create Workspace...</string>
+      </property>
+    </action>
+    <action name="actionChangeWorkspace">
+      <property name="text">
+        <string>Change Workspace...</string>
+      </property>
+    </action>
+    <action name="actionExit">
+      <property name="text">
+        <string>Exit                                             </string>
+      </property>
+      <property name="shortcut">
+        <string>Alt+F4</string>
+      </property>
+    </action>
+    <action name="actionPreferences">
+      <property name="text">
+        <string>Preferences</string>
+      </property>
+    </action>
+    <action name="actionRunForward">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</iconset>
+      </property>
+      <property name="text">
+        <string>Run the simulation forwards</string>
+      </property>
+    </action>
+    <action name="actionStop">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</iconset>
+      </property>
+      <property name="text">
+        <string>Stop the simulation</string>
+      </property>
+    </action>
+    <action name="actionRunReverse">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</iconset>
+      </property>
+      <property name="text">
+        <string>Run the simulation backwards</string>
+      </property>
+    </action>
+    <action name="actionMultithreadingEnabled">
+      <property name="checkable">
+        <bool>true</bool>
+      </property>
+      <property name="checked">
+        <bool>true</bool>
+      </property>
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/format-justify-right.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/format-justify-right.png</iconset>
+      </property>
+      <property name="text">
+        <string>Multithreading Enabled</string>
+      </property>
+    </action>
+    <action name="actionReverseExecutionEnabled">
+      <property name="checkable">
+        <bool>true</bool>
+      </property>
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/object-rotate-left.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/object-rotate-left.png</iconset>
+      </property>
+      <property name="text">
+        <string>Reverse Execution Enabled</string>
+      </property>
+    </action>
+    <action name="actionDisassembly">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Disassembly</string>
+      </property>
+    </action>
+    <action name="actionStackTrace">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Stack Trace</string>
+      </property>
+    </action>
+    <action name="actionSourceView">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Source View</string>
+      </property>
+    </action>
+    <action name="actionCPURegisters">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>CPU Registers</string>
+      </property>
+    </action>
+    <action name="actionDeviceRegisters">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Device Registers</string>
+      </property>
+    </action>
+    <action name="actionMemoryContents">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Memory Contents</string>
+      </property>
+    </action>
+    <action name="actionCommandLineWindow">
+      <property name="text">
+        <string>Command Line Window</string>
+      </property>
+    </action>
+    <action name="actionCommandBrowser">
+      <property name="text">
+        <string>Command Browser</string>
+      </property>
+    </action>
+    <action name="actionHapsBrowser">
+      <property name="text">
+        <string>Haps Brower</string>
+      </property>
+    </action>
+    <action name="actionObjectBrowser">
+      <property name="text">
+        <string>Object Brower</string>
+      </property>
+    </action>
+    <action name="atcionConfigurationBrowser">
+      <property name="text">
+        <string>Configuration Brower</string>
+      </property>
+    </action>
+    <action name="actionNewStatisticsPlot">
+      <property name="text">
+        <string>New Statistics Plot</string>
+      </property>
+    </action>
+    <action name="actionMemoryMappingsBrowser">
+      <property name="text">
+        <string>Memory Mappings Browser</string>
+      </property>
+    </action>
+    <action name="actionMinimizeAllConsoles">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Minimize All Consoles</string>
+      </property>
+    </action>
+    <action name="actionRestoreAllConsoles">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Restore All Consoles</string>
+      </property>
+    </action>
+    <action name="actionOpenAllConsoles">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Open All Consoles</string>
+      </property>
+    </action>
+    <action name="actionCloseAllConsoles">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Close All Consoles</string>
+      </property>
+    </action>
+    <action name="actionNoConsoleWindows">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>&lt;No Console Windows&gt;</string>
+      </property>
+    </action>
+    <action name="actionContents">
+      <property name="text">
+        <string>Contents</string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+F1</string>
+      </property>
+    </action>
+    <action name="actionGettingStarted">
+      <property name="text">
+        <string>Getting Started</string>
+      </property>
+    </action>
+    <action name="actionTechnicalSupport">
+      <property name="text">
+        <string>Technical Support</string>
+      </property>
+    </action>
+    <action name="actionBugReportForum">
+      <property name="text">
+        <string>Bug Report Forum</string>
+      </property>
+    </action>
+    <action name="actionUserRegistration">
+      <property name="text">
+        <string>User Registration</string>
+      </property>
+    </action>
+    <action name="actionVirtutechWebsite">
+      <property name="text">
+        <string>AMS Website</string>
+      </property>
+    </action>
+    <action name="actionLicense">
+      <property name="text">
+        <string>License</string>
+      </property>
+    </action>
+    <action name="actionAbout">
+      <property name="text">
+        <string>About</string>
+      </property>
+    </action>
+    <action name="actionRunTheSimulationBackwards">
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</iconset>
+      </property>
+      <property name="text">
+        <string>Run the simulation backwards</string>
+      </property>
+    </action>
+    <action name="actionStopTheSimulation">
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</iconset>
+      </property>
+      <property name="text">
+        <string>Stop the simulation</string>
+      </property>
+    </action>
+    <action name="actionRunTheSimulationForwards">
+      <property name="icon">
+        <iconset>
+        <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</iconset>
+      </property>
+      <property name="text">
+        <string>Run the simulation forwards</string>
+      </property>
+    </action>
+    <action name="actionClearInputRecording">
+      <property name="enabled">
+        <bool>false</bool>
+      </property>
+      <property name="text">
+        <string>Clear Input Recording</string>
+      </property>
+    </action>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>407</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="actionNew_Empty_Session"/>
-    <addaction name="actionNew_Session_from_Script"/>
-    <addaction name="actionOpen_Checkpoint"/>
-    <addaction name="actionSave_Checkpoint"/>
-    <addaction name="separator"/>
-    <addaction name="actionAppend_from_Script"/>
-    <addaction name="actionAppend_from_Checkpoint"/>
-    <addaction name="separator"/>
-    <addaction name="actionLoad_Presistent_State"/>
-    <addaction name="actionSave_Persistent_State"/>
-    <addaction name="separator"/>
-    <addaction name="actionRun_Python_File"/>
-    <addaction name="separator"/>
-    <addaction name="actionCreate_Workspace"/>
-    <addaction name="actionChange_Workspace"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
-   </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-    <addaction name="actionPreferences"/>
-   </widget>
-   <widget class="QMenu" name="menuRun">
-    <property name="title">
-     <string>Run</string>
-    </property>
-    <addaction name="actionRun_Forward"/>
-    <addaction name="actionStop"/>
-    <addaction name="actionRun_Reverse"/>
-    <addaction name="separator"/>
-    <addaction name="actionMultithreading_Enabled"/>
-    <addaction name="actionReverse_Execution_Enabled"/>
-    <addaction name="actionClear_Input_Recording"/>
-   </widget>
-   <widget class="QMenu" name="menuDebug">
-    <property name="title">
-     <string>Debug</string>
-    </property>
-    <addaction name="actionDisassembly"/>
-    <addaction name="actionStack_Trace"/>
-    <addaction name="actionSource_View"/>
-    <addaction name="actionCPU_Registers"/>
-    <addaction name="actionDevice_Registers"/>
-    <addaction name="actionMemory_Contents"/>
-   </widget>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
-    <addaction name="actionCommand_Line_Window"/>
-    <addaction name="actionCommand_Browser"/>
-    <addaction name="actionHaps_Brower"/>
-    <addaction name="actionObject_Brower"/>
-    <addaction name="actionConfiguration_Brower"/>
-    <addaction name="actionNew_Statistics_Plot"/>
-    <addaction name="actionMemory_Mappings_Browser"/>
-   </widget>
-   <widget class="QMenu" name="menuWindow">
-    <property name="title">
-     <string>Window</string>
-    </property>
-    <addaction name="actionMinimize_All_Consoles"/>
-    <addaction name="actionRestore_All_Consoles"/>
-    <addaction name="separator"/>
-    <addaction name="actionOpen_All_Consoles"/>
-    <addaction name="actionClose_All_Consoles"/>
-    <addaction name="separator"/>
-    <addaction name="action_No_Console_Windows"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="actionContents"/>
-    <addaction name="separator"/>
-    <addaction name="actionGetting_Started"/>
-    <addaction name="separator"/>
-    <addaction name="actionTechnical_Support"/>
-    <addaction name="actionBug_Report_Forum"/>
-    <addaction name="actionUser_Registration"/>
-    <addaction name="actionVirtutech_Website"/>
-    <addaction name="separator"/>
-    <addaction name="actionLicense"/>
-    <addaction name="actionAbout"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-   <addaction name="menuRun"/>
-   <addaction name="menuDebug"/>
-   <addaction name="menuTools"/>
-   <addaction name="menuWindow"/>
-   <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionNew_Session_from_Script"/>
-   <addaction name="actionOpen_Checkpoint"/>
-   <addaction name="actionSave_Checkpoint"/>
-   <addaction name="separator"/>
-   <addaction name="actionRun_Reverse"/>
-   <addaction name="actionStop"/>
-   <addaction name="actionRun_Forward"/>
-   <addaction name="separator"/>
-   <addaction name="actionMultithreading_Enabled"/>
-   <addaction name="actionReverse_Execution_Enabled"/>
-  </widget>
-  <action name="actionNew_Empty_Session">
-   <property name="text">
-    <string>New Empty Session</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::ApplicationSpecificRole</enum>
-   </property>
-  </action>
-  <action name="New_session_from_script">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/24/im-message-new.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/24/im-message-new.png</iconset>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </action>
-  <action name="actionOpen_Checkpoint">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-open.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-open.png</iconset>
-   </property>
-   <property name="text">
-    <string>Open Checkpoint...                       </string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionSave_Checkpoint">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-save.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-save.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save Checkpoint...                        </string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
-  </action>
-  <action name="actionAppend_from_Script">
-   <property name="text">
-    <string>Append from Script...</string>
-   </property>
-  </action>
-  <action name="actionAppend_from_Checkpoint">
-   <property name="text">
-    <string>Append from Checkpoint...</string>
-   </property>
-  </action>
-  <action name="actionLoad_Presistent_State">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Load Presistent State...</string>
-   </property>
-  </action>
-  <action name="actionSave_Persistent_State">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Save Persistent State...</string>
-   </property>
-  </action>
-  <action name="actionRun_Python_File">
-   <property name="text">
-    <string>Run Python File...</string>
-   </property>
-  </action>
-  <action name="actionCreate_Workspace">
-   <property name="text">
-    <string>Create Workspace...</string>
-   </property>
-  </action>
-  <action name="actionChange_Workspace">
-   <property name="text">
-    <string>Change Workspace...</string>
-   </property>
-  </action>
-  <action name="actionExit">
-   <property name="text">
-    <string>Exit                                             </string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+F4</string>
-   </property>
-  </action>
-  <action name="actionPreferences">
-   <property name="text">
-    <string>Preferences</string>
-   </property>
-  </action>
-  <action name="actionRun_Forward">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</iconset>
-   </property>
-   <property name="text">
-    <string>Run the simulation forwards</string>
-   </property>
-  </action>
-  <action name="actionStop">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</iconset>
-   </property>
-   <property name="text">
-    <string>Stop the simulation</string>
-   </property>
-  </action>
-  <action name="actionRun_Reverse">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</iconset>
-   </property>
-   <property name="text">
-    <string>Run the simulation backwards</string>
-   </property>
-  </action>
-  <action name="actionMultithreading_Enabled">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/format-justify-right.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/format-justify-right.png</iconset>
-   </property>
-   <property name="text">
-    <string>Multithreading Enabled</string>
-   </property>
-  </action>
-  <action name="actionReverse_Execution_Enabled">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/object-rotate-left.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/object-rotate-left.png</iconset>
-   </property>
-   <property name="text">
-    <string>Reverse Execution Enabled</string>
-   </property>
-  </action>
-  <action name="actionDisassembly">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Disassembly</string>
-   </property>
-  </action>
-  <action name="actionStack_Trace">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Stack Trace</string>
-   </property>
-  </action>
-  <action name="actionSource_View">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Source View</string>
-   </property>
-  </action>
-  <action name="actionCPU_Registers">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>CPU Registers</string>
-   </property>
-  </action>
-  <action name="actionDevice_Registers">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Device Registers</string>
-   </property>
-  </action>
-  <action name="actionMemory_Contents">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Memory Contents</string>
-   </property>
-  </action>
-  <action name="actionCommand_Line_Window">
-   <property name="text">
-    <string>Command Line Window</string>
-   </property>
-  </action>
-  <action name="actionCommand_Browser">
-   <property name="text">
-    <string>Command Browser</string>
-   </property>
-  </action>
-  <action name="actionHaps_Brower">
-   <property name="text">
-    <string>Haps Brower</string>
-   </property>
-  </action>
-  <action name="actionObject_Brower">
-   <property name="text">
-    <string>Object Brower</string>
-   </property>
-  </action>
-  <action name="actionConfiguration_Brower">
-   <property name="text">
-    <string>Configuration Brower</string>
-   </property>
-  </action>
-  <action name="actionNew_Statistics_Plot">
-   <property name="text">
-    <string>New Statistics Plot</string>
-   </property>
-  </action>
-  <action name="actionMemory_Mappings_Browser">
-   <property name="text">
-    <string>Memory Mappings Browser</string>
-   </property>
-  </action>
-  <action name="actionMinimize_All_Consoles">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Minimize All Consoles</string>
-   </property>
-  </action>
-  <action name="actionRestore_All_Consoles">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Restore All Consoles</string>
-   </property>
-  </action>
-  <action name="actionOpen_All_Consoles">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Open All Consoles</string>
-   </property>
-  </action>
-  <action name="actionClose_All_Consoles">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Close All Consoles</string>
-   </property>
-  </action>
-  <action name="action_No_Console_Windows">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>&lt;No Console Windows&gt;</string>
-   </property>
-  </action>
-  <action name="actionContents">
-   <property name="text">
-    <string>Contents</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+F1</string>
-   </property>
-  </action>
-  <action name="actionGetting_Started">
-   <property name="text">
-    <string>Getting Started</string>
-   </property>
-  </action>
-  <action name="actionTechnical_Support">
-   <property name="text">
-    <string>Technical Support</string>
-   </property>
-  </action>
-  <action name="actionBug_Report_Forum">
-   <property name="text">
-    <string>Bug Report Forum</string>
-   </property>
-  </action>
-  <action name="actionUser_Registration">
-   <property name="text">
-    <string>User Registration</string>
-   </property>
-  </action>
-  <action name="actionVirtutech_Website">
-   <property name="text">
-    <string>AMS Website</string>
-   </property>
-  </action>
-  <action name="actionLicense">
-   <property name="text">
-    <string>License</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
-   </property>
-  </action>
-  <action name="actionNew_Session_from_Script">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/add.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/add.png</iconset>
-   </property>
-   <property name="text">
-    <string>New session from script</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-   <property name="visible">
-    <bool>true</bool>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::TextHeuristicRole</enum>
-   </property>
-  </action>
-  <action name="actionRun_the_simulation_backwards">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</iconset>
-   </property>
-   <property name="text">
-    <string>Run the simulation backwards</string>
-   </property>
-  </action>
-  <action name="actionStop_the_simulation">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</iconset>
-   </property>
-   <property name="text">
-    <string>Stop the simulation</string>
-   </property>
-  </action>
-  <action name="actionRun_the_simulation_forwards">
-   <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</iconset>
-   </property>
-   <property name="text">
-    <string>Run the simulation forwards</string>
-   </property>
-  </action>
-  <action name="actionClear_Input_Recording">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Clear Input Recording</string>
-   </property>
-  </action>
- </widget>
- <resources/>
- <connections/>
+  <resources/>
+  <connections/>
 </ui>
