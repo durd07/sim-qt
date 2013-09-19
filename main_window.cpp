@@ -25,7 +25,7 @@ void MainWindow::newSessionFromScript(void) {
     QString scriptName = QFileDialog::getOpenFileName(this,
                                                       tr("Selete start script"),
                                                       ".",
-                                                      tr("Script files (*.sf)"));
+                                                      tr("Script files (*.sim)"));
     if (!scriptName.isEmpty()) {
 
     }
