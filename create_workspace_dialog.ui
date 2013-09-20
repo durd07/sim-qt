@@ -24,7 +24,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="separateDialogInfoLabelAndDiiecotoryTreeWidget">
+      <spacer name="separateDialogInfoLabelAndDirecotoryTreeView">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -40,13 +40,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QTreeWidget" name="DirectoryTreeWidget">
-       <column>
-        <property name="text">
-         <string notr="true">1</string>
-        </property>
-       </column>
-      </widget>
+      <widget class="QTreeView" name="DirecotoryTreeView"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
