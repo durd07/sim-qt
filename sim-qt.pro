@@ -15,6 +15,7 @@ CONFIG  +=  console plugin link_pkgconfig
 
 SOURCES += main.cpp\
 		   main_window.cpp\
+           main_window_file_slots.cpp\
            sim_application.cpp
 
 HEADERS += main_window.h\
