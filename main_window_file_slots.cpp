@@ -55,11 +55,3 @@ void MainWindow::runPythonFile(void) {
                                                       tr("Python files (*.py)"));
 }
 
-void MainWindow::createWorkspace(void) {
-
-}
-
-void MainWindow::changeWorkspace(void) {
-
-}
-

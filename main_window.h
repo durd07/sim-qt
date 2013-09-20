@@ -2,6 +2,7 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include "create_workspace_dialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -27,10 +28,9 @@ private slots:
     bool loadPresistentState(void);
     bool savePresitentState(void);
     void runPythonFile(void);
-    void createWorkspace(void);
-    void changeWorkspace(void);
 private:
     Ui::MainWindow *main_ui_;
+    CreateWorkspaceDialog create_workspace_dialog;
 };
 
 #endif

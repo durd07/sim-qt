@@ -15,18 +15,24 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::setFileMenu(void) {
-    connect(main_ui_->actionNewEmptySession, SIGNAL(triggered()), this, SLOT(newEmptySession()));
-    connect(main_ui_->actionNewSessionFromScript, SIGNAL(triggered()), this, SLOT(newSessionFromScript()));
-    connect(main_ui_->actionOpenCheckpoint, SIGNAL(triggered()), this, SLOT(openCheckpoint()));
-    connect(main_ui_->actionAppendFromScript, SIGNAL(triggered()), this, SLOT(appendFromScript()));
-    connect(main_ui_->actionAppendFromCheckpoint, SIGNAL(triggered()), this, SLOT(appendFromCheckpoint()));
-    connect(main_ui_->actionRunPythonFile, SIGNAL(triggered()), this, SLOT(runPythonFile()));
-    connect(main_ui_->actionExit, SIGNAL(triggered()), simApp, SLOT(closeAllWindows()));
+    connect(main_ui_->actionNewEmptySession, SIGNAL(triggered()),
+            this, SLOT(newEmptySession()));
+    connect(main_ui_->actionNewSessionFromScript, SIGNAL(triggered()),
+            this, SLOT(newSessionFromScript()));
+    connect(main_ui_->actionOpenCheckpoint, SIGNAL(triggered()),
+            this, SLOT(openCheckpoint()));
+    connect(main_ui_->actionAppendFromScript, SIGNAL(triggered()),
+            this, SLOT(appendFromScript()));
+    connect(main_ui_->actionAppendFromCheckpoint, SIGNAL(triggered()),
+            this, SLOT(appendFromCheckpoint()));
+    connect(main_ui_->actionRunPythonFile, SIGNAL(triggered()),
+            this, SLOT(runPythonFile()));
+    connect(main_ui_->actionCreateWorkspace, SIGNAL(triggered()),
+            &this->create_workspace_dialog, SLOT(createWorkspace()));
+    connect(main_ui_->actionExit, SIGNAL(triggered()),
+            simApp, SLOT(closeAllWindows()));
 }
 
-
-
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete main_ui_;
 }

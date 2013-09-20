@@ -13,6 +13,8 @@ class CreateWorkspaceDialog : public QWidget {
 public:
     explicit CreateWorkspaceDialog(QWidget *parent = 0);
     ~CreateWorkspaceDialog();
+private slots:
+    void createWorkspace(void);
 private:
     Ui::CreateWorkspaceDialog *create_workspace_dialog_ui_;
 };
