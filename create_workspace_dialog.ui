@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>浏览文件夹</string>
+   <string>Browse for Folder</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -47,7 +47,7 @@
        <item>
         <widget class="QLabel" name="DirectoryLabel">
          <property name="text">
-          <string>文件夹:</string>
+          <string>Folder:</string>
          </property>
         </widget>
        </item>
@@ -93,7 +93,7 @@
        <item>
         <widget class="QPushButton" name="CreateDirectoryButton">
          <property name="text">
-          <string>新建文件夹(M)</string>
+          <string>New Folder(M)</string>
          </property>
          <property name="shortcut">
           <string>Alt+M</string>
@@ -119,14 +119,14 @@
        <item>
         <widget class="QPushButton" name="SureButton">
          <property name="text">
-          <string>确定</string>
+          <string>OK</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="CancelButton">
          <property name="text">
-          <string>取消</string>
+          <string>Cancel</string>
          </property>
         </widget>
        </item>
