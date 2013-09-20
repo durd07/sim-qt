@@ -483,7 +483,7 @@
     </action>
     <action name="actionVirtutechWebsite">
       <property name="text">
-        <string>AMS Website</string>
+        <string>Sim Website</string>
       </property>
     </action>
     <action name="actionLicense">
