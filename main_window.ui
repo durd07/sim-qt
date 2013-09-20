@@ -51,7 +51,7 @@
         <addaction name="actionLoadPresistentState"/>
         <addaction name="actionSavePresistentState"/>
         <addaction name="separator"/>
-        <addaction name="actionPythonFile"/>
+        <addaction name="actionRunPythonFile"/>
         <addaction name="separator"/>
         <addaction name="actionCreateWorkspace"/>
         <addaction name="actionChangeWorkspace"/>
@@ -236,7 +236,7 @@
         <string>Save Persistent State...</string>
       </property>
     </action>
-    <action name="actionPythonFile">
+    <action name="actionRunPythonFile">
       <property name="text">
         <string>Run Python File...</string>
       </property>
