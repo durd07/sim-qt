@@ -63,6 +63,3 @@ void MainWindow::changeWorkspace(void) {
 
 }
 
-void MainWindow::exit(void) {
-
-}

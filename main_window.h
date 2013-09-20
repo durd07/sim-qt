@@ -13,6 +13,9 @@ class MainWindow : public QMainWindow {
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+private:
+    void setFileMenu(void);
 signals:
 private slots:
     void newEmptySession(void);
@@ -26,7 +29,6 @@ private slots:
     void runPythonFile(void);
     void createWorkspace(void);
     void changeWorkspace(void);
-    void exit(void);
 private:
     Ui::MainWindow *main_ui_;
 };
