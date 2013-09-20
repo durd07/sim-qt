@@ -2,6 +2,7 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include "open_checkpoint_dialog.h"
 #include "create_workspace_dialog.h"
 
 namespace Ui {
@@ -21,16 +22,16 @@ signals:
 private slots:
     void newEmptySession(void);
     void newSessionFromScript(void);
-    void openCheckpoint(void);
     bool saveCheckpoint(void);
     void appendFromScript(void);
-    void appendFromCheckpoint(void);
     bool loadPresistentState(void);
     bool savePresitentState(void);
     void runPythonFile(void);
 private:
     Ui::MainWindow *main_ui_;
+    OpenCheckpointDialog open_checkpoint_dialog;
     CreateWorkspaceDialog create_workspace_dialog;
+
 };
 
 #endif

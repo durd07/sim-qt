@@ -15,13 +15,6 @@ void MainWindow::newSessionFromScript(void) {
     }
 }
 
-void MainWindow::openCheckpoint(void) {
-    QString scriptName = QFileDialog::getOpenFileName(this,
-                                                      tr("Selete checkpoint"),
-                                                      ".",
-                                                      tr("Sim checkpoint (*.sc)"));
-}
-
 bool MainWindow::saveCheckpoint(void) {
     return true;
 }
@@ -31,13 +24,9 @@ void MainWindow::appendFromScript(void) {
                                                       tr("Selete start script"),
                                                       ".",
                                                       tr("Script files (*.sim)"));
-}
+    if (!scriptName.isEmpty()) {
 
-void MainWindow::appendFromCheckpoint(void) {
-    QString scriptName = QFileDialog::getOpenFileName(this,
-                                                      tr("Selete checkpoint"),
-                                                      ".",
-                                                      tr("Sim checkpoint (*.sc)"));
+    }
 }
 
 bool MainWindow::loadPresistentState(void) {

@@ -20,11 +20,11 @@ void MainWindow::setFileMenu(void) {
     connect(main_ui_->actionNewSessionFromScript, SIGNAL(triggered()),
             this, SLOT(newSessionFromScript()));
     connect(main_ui_->actionOpenCheckpoint, SIGNAL(triggered()),
-            this, SLOT(openCheckpoint()));
+            &this->open_checkpoint_dialog, SLOT(openCheckpoint()));
     connect(main_ui_->actionAppendFromScript, SIGNAL(triggered()),
             this, SLOT(appendFromScript()));
     connect(main_ui_->actionAppendFromCheckpoint, SIGNAL(triggered()),
-            this, SLOT(appendFromCheckpoint()));
+            &this->open_checkpoint_dialog, SLOT(appendFromCheckpoint()));
     connect(main_ui_->actionRunPythonFile, SIGNAL(triggered()),
             this, SLOT(runPythonFile()));
     connect(main_ui_->actionCreateWorkspace, SIGNAL(triggered()),
