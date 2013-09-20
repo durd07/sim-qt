@@ -29,6 +29,8 @@ void MainWindow::setFileMenu(void) {
             this, SLOT(runPythonFile()));
     connect(main_ui_->actionCreateWorkspace, SIGNAL(triggered()),
             &this->create_workspace_dialog, SLOT(createWorkspace()));
+    connect(main_ui_->actionChangeWorkspace, SIGNAL(triggered()),
+            &this->create_workspace_dialog, SLOT(changeWorkspace()));
     connect(main_ui_->actionExit, SIGNAL(triggered()),
             simApp, SLOT(closeAllWindows()));
 }

@@ -15,6 +15,7 @@ public:
     ~CreateWorkspaceDialog();
 private slots:
     void createWorkspace(void);
+    void changeWorkspace(void);
 private:
     Ui::CreateWorkspaceDialog *create_workspace_dialog_ui_;
 };
