@@ -18,6 +18,12 @@ public:
 
 private:
     void setFileMenu(void);
+    void setEditMenu(void);
+    void setRunMenu(void);
+    void setDebugMenu(void);
+    void setToolsMenu(void);
+    void setWindowMenu(void);
+    void setHelpMenu(void);
 signals:
 private slots:
     void newEmptySession(void);
@@ -27,6 +33,7 @@ private slots:
     bool loadPresistentState(void);
     bool savePresitentState(void);
     void runPythonFile(void);
+
 private:
     Ui::MainWindow *main_ui_;
     OpenCheckpointDialog open_checkpoint_dialog;
