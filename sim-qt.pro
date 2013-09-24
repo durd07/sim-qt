@@ -20,11 +20,14 @@ SOURCES += main.cpp\
            open_checkpoint_dialog_slots.cpp\
            create_workspace_dialog.cpp\
            create_workspace_dialog_slots.cpp\
+           open_command_line_window_dialog.cpp\
+           open_command_line_window_dialog_slots.cpp\
            sim_application.cpp
 
 HEADERS += main_window.h\
            sim_application.h\
            open_checkpoint_dialog.h\
+           open_command_line_window_dialog.h\
            create_workspace_dialog.h
 
 FORMS += cli.ui main_window.ui open_checkpoint_dialog.ui create_workspace_dialog.ui
