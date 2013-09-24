@@ -1,6 +1,7 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 #include "sim_application.h"
+#include <QLabel>
 
 static MainWindow *gbl_cur_main_window = NULL;
 
@@ -9,7 +10,16 @@ MainWindow::MainWindow(QWidget *parent) :
     main_ui_(new Ui::MainWindow) {
     gbl_cur_main_window = this;
     main_ui_->setupUi(this);
-
+#if 1                                   // fix me
+    QLabel *x = new QLabel;
+    x->setAlignment(Qt::AlignHCenter);
+    x->setMinimumSize(x->sizeHint());
+    QLabel *y = new QLabel;
+    QLabel *z = new QLabel;
+    main_ui_->statusBar->addWidget(x);
+    main_ui_->statusBar->addWidget(y, 1);
+    main_ui_->statusBar->addWidget(z, 2);
+#endif
     setFileMenu();
 
 }
