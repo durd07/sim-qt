@@ -31,3 +31,5 @@ HEADERS += main_window.h\
            create_workspace_dialog.h
 
 FORMS += cli.ui main_window.ui open_checkpoint_dialog.ui create_workspace_dialog.ui
+
+RESOURCES = icons.qrc
