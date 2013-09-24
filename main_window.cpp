@@ -33,6 +33,9 @@ void MainWindow::setFileMenu(void) {
             &this->create_workspace_dialog, SLOT(changeWorkspace()));
     connect(main_ui_->actionExit, SIGNAL(triggered()),
             simApp, SLOT(closeAllWindows()));
+
+    connect(main_ui_->actionCommandLineWindow, SIGNAL(triggered()),
+            &this->open_command_line_window_dialog, SLOT(openCommandLineWindow()));
 }
 
 MainWindow::~MainWindow() {

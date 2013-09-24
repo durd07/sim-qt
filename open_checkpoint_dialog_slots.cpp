@@ -1,6 +1,5 @@
 #include "open_checkpoint_dialog.h"
 #include "ui_open_checkpoint_dialog.h"
-#include <cstdio>
 
 void OpenCheckpointDialog::openCheckpoint(void) {
     this->show();
