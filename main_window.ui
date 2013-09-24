@@ -167,8 +167,8 @@
   </action>
   <action name="actionNewSessionFromScript">
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/add.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/add.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/new_session_from_script.png</normaloff>:/images/new_session_from_script.png</iconset>
    </property>
    <property name="text">
     <string>New session from script</string>
@@ -188,8 +188,8 @@
   </action>
   <action name="actionOpenCheckpoint">
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-open.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-open.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/open_a_checkpoint.png</normaloff>:/images/open_a_checkpoint.png</iconset>
    </property>
    <property name="text">
     <string>Open Checkpoint...                       </string>
@@ -206,8 +206,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-save.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/document-save.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/save_a_checkpoint.png</normaloff>:/images/save_a_checkpoint.png</iconset>
    </property>
    <property name="text">
     <string>Save Checkpoint...                        </string>
@@ -278,8 +278,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-rtl.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/run_the_simulation_forwards.png</normaloff>:/images/run_the_simulation_forwards.png</iconset>
    </property>
    <property name="text">
     <string>Run the simulation forwards</string>
@@ -293,8 +293,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-media-stop.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/stop_the_simulation.png</normaloff>:/images/stop_the_simulation.png</iconset>
    </property>
    <property name="text">
     <string>Stop the simulation</string>
@@ -308,8 +308,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/gtk-go-back-ltr.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/run_the_simulation_backwards.png</normaloff>:/images/run_the_simulation_backwards.png</iconset>
    </property>
    <property name="text">
     <string>Run the simulation backwards</string>
@@ -326,8 +326,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/format-justify-right.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/format-justify-right.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/enable_or_disable_multithreaded_simulation.png</normaloff>:/images/enable_or_disable_multithreaded_simulation.png</iconset>
    </property>
    <property name="text">
     <string>Multithreading Enabled</string>
@@ -344,8 +344,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/object-rotate-left.png</normaloff>../../.icons/Mac-X-Lion-reload/actions/gtk/object-rotate-left.png</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/images/enable_or_disable_reverse_execution.png</normaloff>:/images/enable_or_disable_reverse_execution.png</iconset>
    </property>
    <property name="text">
     <string>Reverse Execution Enabled</string>
@@ -556,6 +556,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>
