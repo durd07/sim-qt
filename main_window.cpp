@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     main_ui_(new Ui::MainWindow) {
     gbl_cur_main_window = this;
     main_ui_->setupUi(this);
+
+    setAttribute(Qt::WA_DeleteOnClose);
 #if 1                                   // fix me
     QLabel *x = new QLabel;
     x->setAlignment(Qt::AlignHCenter);

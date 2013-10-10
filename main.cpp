@@ -1,3 +1,4 @@
+#include <QtGui>
 #include "sim_application.h"
 #include "main_window.h"
 

@@ -2,7 +2,9 @@
 #include "main_window.h"
 
 void MainWindow::newEmptySession(void) {
-
+    MainWindow *new_mainWindow = new(MainWindow);
+    new_mainWindow->show();
+    this->close();
 }
 
 void MainWindow::newSessionFromScript(void) {
