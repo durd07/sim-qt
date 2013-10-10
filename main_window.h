@@ -40,7 +40,6 @@ signals:
 private slots:
 
 private:
-    int aa[100000000];
     Ui::MainWindow *main_ui_;
     OpenCheckpointDialog open_checkpoint_dialog;
     CreateWorkspaceDialog create_workspace_dialog;
