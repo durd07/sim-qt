@@ -8,7 +8,7 @@ CreateWorkspaceDialog::CreateWorkspaceDialog(QWidget *parent) :
     QWidget(parent),
     create_workspace_dialog_ui_(new Ui::CreateWorkspaceDialog) {
     create_workspace_dialog_ui_->setupUi(this);
-    #if 0
+#if 0
     QDirModel *model = new QDirModel(this);
     QString home_files = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QModelIndex homeIndex = model->index(home_files);

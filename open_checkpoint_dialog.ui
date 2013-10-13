@@ -37,12 +37,23 @@
       </layout>
      </item>
      <item>
-      <widget class="QTreeView" name="CheckpointDirectoryTreeView"/>
+      <widget class="QListWidget" name="CheckpointDirectoryListWidget"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QComboBox" name="SimCheckpointComboBox"/>
+        <widget class="QComboBox" name="SimCheckpointComboBox">
+         <item>
+          <property name="text">
+           <string>Simics checkpoints</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>All files</string>
+          </property>
+         </item>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer">

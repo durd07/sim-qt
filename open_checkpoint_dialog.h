@@ -5,6 +5,7 @@
 #include <QFileSystemModel>
 
 class QFileSystemModel;
+class QListWidgetItem;
 
 namespace Ui {
     class OpenCheckpointDialog;
@@ -17,17 +18,20 @@ public:
     explicit OpenCheckpointDialog(QWidget *parent = 0);
     ~OpenCheckpointDialog();
 private:
-    void initFilesystemModel(void);
-    void initCheckpointDirectoryTreeView(QFileSystemModel *fsm);
-    void initSelectDirectoryComboBox(QFileSystemModel *fsm);
-
+    void initSelectDirectoryComboBox(QDir dir);
+    void showFileInfoList(QDir dir, bool showall);
 private slots:
     void openCheckpoint(void);
     void appendFromCheckpoint(void);
-    void setComboRootIndex(const QModelIndex &index);
+    void slotShowDir(QListWidgetItem *item);
+    void slotSelectDirectoryChanged(int index);
+    void slotUPButton();
+    void slotSimCheckpointComboBox(int index);
+    void slotOpenEnable(QListWidgetItem * current, QListWidgetItem * previous);
+    void slotOpen(void);
 private:
     Ui::OpenCheckpointDialog *open_checkpoint_dialog_ui_;
-    QFileSystemModel *fsModel;
+    bool showall;
 };
 
 #endif

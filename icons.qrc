@@ -1,12 +1,14 @@
- <!DOCTYPE RCC><RCC version="1.0">
- <qresource>
-     <file>images/new_session_from_script.png</file>
-     <file>images/open_a_checkpoint.png</file>
-     <file>images/save_a_checkpoint.png</file>
-     <file>images/run_the_simulation_backwards.png</file>
-     <file>images/stop_the_simulation.png</file>
-     <file>images/run_the_simulation_forwards.png</file>
-     <file>images/enable_or_disable_multithreaded_simulation.png</file>
-     <file>images/enable_or_disable_reverse_execution.png</file>
- </qresource>
- </RCC>
+<RCC>
+    <qresource prefix="/">
+        <file>images/new_session_from_script.png</file>
+        <file>images/open_a_checkpoint.png</file>
+        <file>images/save_a_checkpoint.png</file>
+        <file>images/run_the_simulation_backwards.png</file>
+        <file>images/stop_the_simulation.png</file>
+        <file>images/run_the_simulation_forwards.png</file>
+        <file>images/enable_or_disable_multithreaded_simulation.png</file>
+        <file>images/enable_or_disable_reverse_execution.png</file>
+        <file>images/dir.png</file>
+        <file>images/file.png</file>
+    </qresource>
+</RCC>

@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     gbl_cur_main_window = this;
     main_ui_->setupUi(this);
 
+    //delete object when close() is called
     setAttribute(Qt::WA_DeleteOnClose);
 #if 1                                   // fix me
     QLabel *x = new QLabel;
