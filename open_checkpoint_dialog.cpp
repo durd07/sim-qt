@@ -2,7 +2,6 @@
 #include <QListView>
 #include "open_checkpoint_dialog.h"
 #include "ui_open_checkpoint_dialog.h"
-#include <QFileSystemModel>
 
 // golbel object, bad idea.
 QString WorkSpachPath;

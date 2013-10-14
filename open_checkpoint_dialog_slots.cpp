@@ -56,6 +56,7 @@ void OpenCheckpointDialog::slotSimCheckpointComboBox(int index)
     //initSelectDirectoryComboBox(FileSysmodel->index(ItemString));
 
     showFileInfoList(FileSysmodel->index(ItemString));
+
 }
 
 void OpenCheckpointDialog::slotOpenEnable(QModelIndex)
