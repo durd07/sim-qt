@@ -37,7 +37,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QListWidget" name="CheckpointDirectoryListWidget"/>
+      <widget class="QListView" name="CheckpointDirectoryListView"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">

@@ -14,14 +14,31 @@ MainWindow::MainWindow(QWidget *parent) :
     //delete object when close() is called
     setAttribute(Qt::WA_DeleteOnClose);
 #if 1                                   // fix me
-    QLabel *x = new QLabel;
-    x->setAlignment(Qt::AlignHCenter);
+    QLabel *x = new QLabel("111          1");
+    x->setAlignment(Qt::AlignCenter);
     x->setMinimumSize(x->sizeHint());
-    QLabel *y = new QLabel;
-    QLabel *z = new QLabel;
-    main_ui_->statusBar->addWidget(x);
+    x->setFrameShape(QFrame::WinPanel);
+    x->setFrameShadow(QFrame::Sunken);
+
+    QLabel *y = new QLabel("222");
+    y->setAlignment(Qt::AlignCenter);
+    y->setMinimumSize(x->sizeHint());
+    y->setFrameShape(QFrame::WinPanel);
+    y->setFrameShadow(QFrame::Sunken);
+
+    QLabel *z = new QLabel("333");
+    z->setAlignment(Qt::AlignCenter);
+    z->setMinimumSize(x->sizeHint());
+    z->setFrameShape(QFrame::WinPanel);
+    z->setFrameShadow(QFrame::Sunken);
+
+    main_ui_->statusBar->addWidget(x, 0);
     main_ui_->statusBar->addWidget(y, 1);
     main_ui_->statusBar->addWidget(z, 2);
+
+    x->setText(tr("baby baby"));
+    y->setText(tr("baby baby"));
+    z->setText(tr("baby baby"));
 #endif
     setFileMenu();
 

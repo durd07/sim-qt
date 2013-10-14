@@ -1,12 +1,14 @@
 #include <QStringList>
 #include "open_checkpoint_dialog.h"
 #include "ui_open_checkpoint_dialog.h"
+#include <QListView>
+#include <QDirModel>
 
 // golbel object, bad idea.
 QString WorkSpachPath = QObject::tr("/home/durd/simics");
 
-OpenCheckpointDialog::OpenCheckpointDialog(QWidget *parent) :
-    QWidget(parent),
+OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
+    QDialog(parent),
     open_checkpoint_dialog_ui_(new Ui::OpenCheckpointDialog) {
     open_checkpoint_dialog_ui_->setupUi(this);
     showall = false;
@@ -19,8 +21,8 @@ OpenCheckpointDialog::OpenCheckpointDialog(QWidget *parent) :
     initSelectDirectoryComboBox(rootDir);
     showFileInfoList(rootDir, showall);
 
-    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListWidget,SIGNAL(itemDoubleClicked(QListWidgetItem *)),this,SLOT(slotShowDir(QListWidgetItem *)));
-    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListWidget,SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),this,SLOT(slotOpenEnable(QListWidgetItem*,QListWidgetItem*)));
+    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(doubleClicked(QModelIndex )),this,SLOT(slotShowDir(QModelIndex )));
+    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(clicked(QModelIndex)),this,SLOT(slotOpenEnable(QModelIndex)));
     connect(open_checkpoint_dialog_ui_->SelectDirectoryComboBox, SIGNAL(activated(int)), this, SLOT(slotSelectDirectoryChanged(int)));
     connect(open_checkpoint_dialog_ui_->UpButton, SIGNAL(clicked()), this, SLOT(slotUPButton()));
     connect(open_checkpoint_dialog_ui_->SimCheckpointComboBox, SIGNAL(activated(int)), this, SLOT(slotSimCheckpointComboBox(int)));
@@ -59,6 +61,7 @@ void OpenCheckpointDialog::initSelectDirectoryComboBox(QDir dir)
 }
 
 void OpenCheckpointDialog::showFileInfoList(QDir dir, bool showall){
+#if 0
     QStringList string;
     string << ((showall) ? "*" : "*.sim");
     QFileInfoList list=dir.entryInfoList (string,QDir::AllEntries | QDir::AllDirs,QDir::DirsFirst);
@@ -79,4 +82,17 @@ void OpenCheckpointDialog::showFileInfoList(QDir dir, bool showall){
             open_checkpoint_dialog_ui_->CheckpointDirectoryListWidget->addItem(tmp);
         }
     }
+#else
+    QStringList string;
+    string << ((showall) ? "*" : "*.sim");
+
+    QDirModel *dirmodel = new QDirModel(string, QDir::AllEntries | QDir::AllDirs | QDir::Drives | QDir::NoDotAndDotDot, QDir::DirsFirst | QDir::IgnoreCase | QDir::Name);
+    QModelIndex index = dirmodel->index(dir.absolutePath());
+
+    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setModel(dirmodel);
+    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->scrollTo(index);
+    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setRootIndex(index);
+    open_checkpoint_dialog_ui_->OpenButton->setEnabled(false);
+#endif
+
 }

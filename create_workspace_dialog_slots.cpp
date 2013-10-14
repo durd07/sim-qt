@@ -14,3 +14,21 @@ void CreateWorkspaceDialog::changeWorkspace(void) {
                                                            "Select workspace to use ...", 0));
     this->show();
 }
+
+void CreateWorkspaceDialog::mkdir()
+{
+    QModelIndex index = create_workspace_dialog_ui_->DirecotoryTreeView->currentIndex();
+    if (!index.isValid())
+    {
+        return;
+    }
+
+    QString dirName = create_workspace_dialog_ui_->FilenameLineEdit->text();
+    if (!dirName.isEmpty())
+    {
+        if (!model->mkdir(index, dirName).isValid())
+        {
+            QMessageBox::information(this,"Create Directory","Failed to create the directory");
+        }
+    }
+}

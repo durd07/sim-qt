@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class QDirModel;
+
 namespace Ui {
     class CreateWorkspaceDialog;
 }
@@ -16,6 +18,9 @@ public:
 private slots:
     void createWorkspace(void);
     void changeWorkspace(void);
+    void mkdir();
+    void on_SureButton_clicked();
+
 private:
     Ui::CreateWorkspaceDialog *create_workspace_dialog_ui_;
 };
