@@ -2,6 +2,7 @@
 #define CREATE_WORKSPACE_DIALOG_H
 
 #include <QWidget>
+#include <QFileSystemModel>
 
 class QDirModel;
 
@@ -20,8 +21,10 @@ private slots:
     void changeWorkspace(void);
     void mkdir();
     void on_SureButton_clicked();
+    void slotShowFilName(QModelIndex index);
 
 private:
+    QFileSystemModel *FileSysmodel;
     Ui::CreateWorkspaceDialog *create_workspace_dialog_ui_;
 };
 

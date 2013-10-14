@@ -1,9 +1,6 @@
+#include <QMessageBox>
 #include "open_checkpoint_dialog.h"
 #include "ui_open_checkpoint_dialog.h"
-#include <QFileInfo>
-#include <QMessageBox>
-#include <QListView>
-
 
 void OpenCheckpointDialog::openCheckpoint(void) {
     this->exec();
@@ -14,24 +11,24 @@ void OpenCheckpointDialog::appendFromCheckpoint(void) {
 }
 
 void OpenCheckpointDialog::slotShowDir(QModelIndex item){
-        QString str = item.data().toString();
-        QVariant ItemData = open_checkpoint_dialog_ui_->SelectDirectoryComboBox->itemData(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
-        QString ItemString = ItemData.value<QString>();
+    QString str = item.data().toString();
+    QVariant ItemData = open_checkpoint_dialog_ui_->SelectDirectoryComboBox->itemData(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
+    QString ItemString = ItemData.value<QString>();
 
-        QDir dir(ItemString);
+    QDir dir(ItemString);
 
-        if(dir.cd(str))
-        {
-            open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(0, dir.dirName(), dir.absolutePath());
-            open_checkpoint_dialog_ui_->SelectDirectoryComboBox->setCurrentIndex(0);
-        }
-        else //file
-        {
-            QString FileObsolutePath = ItemString + "/" + str;
-            QMessageBox::warning(this, "Message", FileObsolutePath, QMessageBox::Ok);
-            close();
-        }
-        showFileInfoList(dir, showall);
+    if(dir.cd(str))
+    {
+        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(0, dir.dirName(), dir.absolutePath());
+        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->setCurrentIndex(0);
+        showFileInfoList(dir);
+    }
+    else //file
+    {
+        QString FileObsolutePath = ItemString + "/" + str;
+        QMessageBox::warning(this, "Message", FileObsolutePath, QMessageBox::Ok);
+        close();
+    }
 }
 
 void OpenCheckpointDialog::slotSelectDirectoryChanged(int index)
@@ -40,7 +37,7 @@ void OpenCheckpointDialog::slotSelectDirectoryChanged(int index)
     QString ItemString = ItemData.value<QString>();
 
     initSelectDirectoryComboBox(ItemString);
-    showFileInfoList(ItemString, showall);
+    showFileInfoList(ItemString);
 }
 
 void OpenCheckpointDialog::slotUPButton()
@@ -54,13 +51,17 @@ void OpenCheckpointDialog::slotUPButton()
 
 void OpenCheckpointDialog::slotSimCheckpointComboBox(int index)
 {
-    showall = index ? true : false;
+    QStringList string;
+    string << ((index) ? "*" : "*.sim");
+
+    dirmodel->setNameFilters(string);
+
     QVariant ItemData = open_checkpoint_dialog_ui_->SelectDirectoryComboBox->itemData(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
     QString ItemString = ItemData.value<QString>();
 
     initSelectDirectoryComboBox(ItemString);
 
-    showFileInfoList(ItemString, showall);
+    showFileInfoList(ItemString);
 }
 
 void OpenCheckpointDialog::slotOpenEnable(QModelIndex)
@@ -71,6 +72,4 @@ void OpenCheckpointDialog::slotOpenEnable(QModelIndex)
 void OpenCheckpointDialog::slotOpen()
 {
     slotShowDir(open_checkpoint_dialog_ui_->CheckpointDirectoryListView->currentIndex());
-
 }
-

@@ -1,9 +1,8 @@
 #ifndef OPEN_CHECKPOINT_DIALOG_H
 #define OPEN_CHECKPOINT_DIALOG_H
 
-#include <QWidget>
 #include <QDialog>
-#include <QFileSystemModel>
+#include <QDirModel>
 
 class QFileSystemModel;
 
@@ -19,7 +18,7 @@ public:
     ~OpenCheckpointDialog();
 private:
     void initSelectDirectoryComboBox(QDir dir);
-    void showFileInfoList(QDir dir, bool showall);
+    void showFileInfoList(QDir dir);
 private slots:
     void openCheckpoint(void);
     void appendFromCheckpoint(void);
@@ -31,7 +30,7 @@ private slots:
     void slotOpen(void);
 private:
     Ui::OpenCheckpointDialog *open_checkpoint_dialog_ui_;
-    bool showall;
+    QDirModel *dirmodel;
 };
 
 #endif
