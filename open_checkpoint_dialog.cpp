@@ -1,25 +1,28 @@
 #include <QStringList>
+#include <QListView>
 #include "open_checkpoint_dialog.h"
 #include "ui_open_checkpoint_dialog.h"
-#include <QListView>
-#include <QDirModel>
+#include <QFileSystemModel>
 
 // golbel object, bad idea.
-QString WorkSpachPath = QObject::tr("/home/durd/simics");
+QString WorkSpachPath;
 
 OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
     QDialog(parent),
     open_checkpoint_dialog_ui_(new Ui::OpenCheckpointDialog) {
     open_checkpoint_dialog_ui_->setupUi(this);
-    showall = false;
 
-    setWindowTitle(tr("Select checkpoint"));
+    FileSysmodel = new QFileSystemModel();
+    FileSysmodel->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::Drives | QDir::NoDotAndDotDot);
+    FileSysmodel->sort(0);
+    //WorkSpachPath = FileSysmodel->myComputer().value<QString>();
+    WorkSpachPath = "C:\\Users\\XHYZ\\Desktop";
 
-    open_checkpoint_dialog_ui_->OpenButton->setEnabled(false);
-    QDir rootDir(WorkSpachPath);
+    QModelIndex modelIndex = FileSysmodel->setRootPath(WorkSpachPath);
+    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setModel(FileSysmodel);
+    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setRootIndex(modelIndex);
 
-    initSelectDirectoryComboBox(rootDir);
-    showFileInfoList(rootDir, showall);
+    initSelectDirectoryComboBox(modelIndex);
 
     connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(doubleClicked(QModelIndex )),this,SLOT(slotShowDir(QModelIndex )));
     connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(clicked(QModelIndex)),this,SLOT(slotOpenEnable(QModelIndex)));
@@ -32,67 +35,24 @@ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
 
 OpenCheckpointDialog::~OpenCheckpointDialog() {
     delete open_checkpoint_dialog_ui_;
+    delete FileSysmodel;
 }
 
-void OpenCheckpointDialog::initSelectDirectoryComboBox(QDir dir)
+void OpenCheckpointDialog::initSelectDirectoryComboBox(QModelIndex index)
 {
-    QDir tempDir = dir;
     open_checkpoint_dialog_ui_->SelectDirectoryComboBox->clear();
+
     int i = 0;
-
-    if("" == tempDir.dirName()){
-        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, tr("Computer"), tempDir.absolutePath());
-    }else{
-        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, tempDir.dirName(), tempDir.absolutePath());
-    }
-
-    while(tempDir.cdUp()){
-        i++;
-        QString FatherPath = tempDir.path();
-        QString FatherPathAbsolute = tempDir.absoluteFilePath(FatherPath);
-        QString FatherDirName = tempDir.dirName();
-        QVariant data(FatherPathAbsolute);
-        if(tr("") == FatherDirName){
-            FatherDirName = tr("Computer");
-        }
-        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, FatherDirName, data);
+    QModelIndex tempindex = index;
+    while(!FileSysmodel->fileName(FileSysmodel->parent(tempindex)).isEmpty()){
+        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, FileSysmodel->fileName(tempindex), FileSysmodel->filePath(tempindex));
+        tempindex = FileSysmodel->parent(tempindex);
         i++;
     }
+    open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, "Compter", "My\ Computer");
 }
 
-void OpenCheckpointDialog::showFileInfoList(QDir dir, bool showall){
-#if 0
-    QStringList string;
-    string << ((showall) ? "*" : "*.sim");
-    QFileInfoList list=dir.entryInfoList (string,QDir::AllEntries | QDir::AllDirs,QDir::DirsFirst);
-
-    open_checkpoint_dialog_ui_->CheckpointDirectoryListWidget->clear();
-
-    for(unsigned int i = 0; i < list.count(); i++){
-        QFileInfo temFileinfo = list.at(i);
-        if(temFileinfo.isDir()){
-            QIcon icon(":/images/dir.png");
-            QString fileName = temFileinfo.fileName();
-            QListWidgetItem *tmp = new QListWidgetItem(icon, fileName);
-            open_checkpoint_dialog_ui_->CheckpointDirectoryListWidget->addItem(tmp);
-        }else{
-            QIcon icon(":/images/file.png");
-            QString fileName = temFileinfo.fileName();
-            QListWidgetItem *tmp = new QListWidgetItem(icon,fileName);
-            open_checkpoint_dialog_ui_->CheckpointDirectoryListWidget->addItem(tmp);
-        }
-    }
-#else
-    QStringList string;
-    string << ((showall) ? "*" : "*.sim");
-
-    QDirModel *dirmodel = new QDirModel(string, QDir::AllEntries | QDir::AllDirs | QDir::Drives | QDir::NoDotAndDotDot, QDir::DirsFirst | QDir::IgnoreCase | QDir::Name);
-    QModelIndex index = dirmodel->index(dir.absolutePath());
-
-    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setModel(dirmodel);
-    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->scrollTo(index);
+void OpenCheckpointDialog::showFileInfoList(QModelIndex index){
     open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setRootIndex(index);
     open_checkpoint_dialog_ui_->OpenButton->setEnabled(false);
-#endif
-
 }

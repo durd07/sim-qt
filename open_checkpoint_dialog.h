@@ -1,11 +1,9 @@
 #ifndef OPEN_CHECKPOINT_DIALOG_H
 #define OPEN_CHECKPOINT_DIALOG_H
 
-#include <QWidget>
 #include <QDialog>
+#include <QDirModel>
 #include <QFileSystemModel>
-
-class QFileSystemModel;
 
 namespace Ui {
     class OpenCheckpointDialog;
@@ -18,12 +16,12 @@ public:
     explicit OpenCheckpointDialog(QDialog *parent = 0);
     ~OpenCheckpointDialog();
 private:
-    void initSelectDirectoryComboBox(QDir dir);
-    void showFileInfoList(QDir dir, bool showall);
+    void initSelectDirectoryComboBox(QModelIndex index);
+    void showFileInfoList(QModelIndex index);
 private slots:
     void openCheckpoint(void);
     void appendFromCheckpoint(void);
-    void slotShowDir(QModelIndex item);
+    void slotShowDir(QModelIndex index);
     void slotSelectDirectoryChanged(int index);
     void slotUPButton();
     void slotSimCheckpointComboBox(int index);
@@ -31,7 +29,7 @@ private slots:
     void slotOpen(void);
 private:
     Ui::OpenCheckpointDialog *open_checkpoint_dialog_ui_;
-    bool showall;
+    QFileSystemModel *FileSysmodel;
 };
 
 #endif

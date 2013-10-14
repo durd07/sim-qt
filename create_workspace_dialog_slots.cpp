@@ -1,5 +1,6 @@
 #include "create_workspace_dialog.h"
 #include "ui_create_workspace_dialog.h"
+#include <QMessageBox>
 
 void CreateWorkspaceDialog::createWorkspace(void) {
     this->create_workspace_dialog_ui_
@@ -23,12 +24,27 @@ void CreateWorkspaceDialog::mkdir()
         return;
     }
 
-    QString dirName = create_workspace_dialog_ui_->FilenameLineEdit->text();
-    if (!dirName.isEmpty())
-    {
-        if (!model->mkdir(index, dirName).isValid())
+//    QString dirName = create_workspace_dialog_ui_->FilenameLineEdit->text();
+//    if (!dirName.isEmpty())
+//    {
+        QModelIndex new_index = FileSysmodel->mkdir(index, tr("New\ Folder"));
+        if (!new_index.isValid())
         {
             QMessageBox::information(this,"Create Directory","Failed to create the directory");
         }
-    }
+        create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(new_index);    //定位到当前项
+//    }
+}
+
+void CreateWorkspaceDialog::slotShowFilName(QModelIndex index)
+{
+    create_workspace_dialog_ui_->DirecotoryTreeView->expand(index);      //当前项展开
+    create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(index);    //定位到当前项
+    create_workspace_dialog_ui_->FilenameLineEdit->setText(FileSysmodel->fileName(index));
+}
+
+void CreateWorkspaceDialog::on_SureButton_clicked()
+{
+    QString FileObsolutePath = "ItemString + + str";
+    QMessageBox::warning(this, "Message", FileObsolutePath, QMessageBox::Ok);
 }

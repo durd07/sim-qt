@@ -10,7 +10,7 @@ TEMPLATE = app
 TARGET = sim-qt
 INCLUDEPATH += .
 
-DEFINES += QT_DLL 
+DEFINES += QT_DLL
 CONFIG  +=  console plugin link_pkgconfig
 
 SOURCES += main.cpp\
