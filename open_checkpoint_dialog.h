@@ -5,6 +5,7 @@
 #include <QDirModel>
 #include <QFileSystemModel>
 
+#define _USE_DIRMODEL
 namespace Ui {
     class OpenCheckpointDialog;
 }
@@ -29,7 +30,11 @@ private slots:
     void slotOpen(void);
 private:
     Ui::OpenCheckpointDialog *open_checkpoint_dialog_ui_;
+#ifdef _USE_DIRMODEL
+    QDirModel *FileSysmodel;
+#else
     QFileSystemModel *FileSysmodel;
+#endif
 };
 
 #endif

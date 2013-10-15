@@ -11,17 +11,29 @@ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
     open_checkpoint_dialog_ui_(new Ui::OpenCheckpointDialog) {
     open_checkpoint_dialog_ui_->setupUi(this);
 
+#ifdef _USE_DIRMODEL
+    FileSysmodel = new QDirModel();
+    FileSysmodel->setSorting(QDir::DirsFirst | QDir::IgnoreCase | QDir::Name);
+#else
     FileSysmodel = new QFileSystemModel();
+#endif
     FileSysmodel->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::Drives | QDir::NoDotAndDotDot);
     FileSysmodel->sort(0);
+    QStringList string;
+    string << "*.sim";
+    FileSysmodel->setNameFilters(string);
     //WorkSpachPath = FileSysmodel->myComputer().value<QString>();
-    WorkSpachPath = "C:\\Users\\XHYZ\\Desktop";
+    WorkSpachPath = "C:\\Users";
 
+#ifdef _USE_DIRMODEL
+    QModelIndex modelIndex = FileSysmodel->index(WorkSpachPath);
+#else
     QModelIndex modelIndex = FileSysmodel->setRootPath(WorkSpachPath);
+#endif
     open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setModel(FileSysmodel);
-    open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setRootIndex(modelIndex);
 
     initSelectDirectoryComboBox(modelIndex);
+    showFileInfoList(modelIndex);
 
     connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(doubleClicked(QModelIndex )),this,SLOT(slotShowDir(QModelIndex )));
     connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(clicked(QModelIndex)),this,SLOT(slotOpenEnable(QModelIndex)));
@@ -40,10 +52,9 @@ OpenCheckpointDialog::~OpenCheckpointDialog() {
 void OpenCheckpointDialog::initSelectDirectoryComboBox(QModelIndex index)
 {
     open_checkpoint_dialog_ui_->SelectDirectoryComboBox->clear();
-
     int i = 0;
     QModelIndex tempindex = index;
-    while(!FileSysmodel->fileName(FileSysmodel->parent(tempindex)).isEmpty()){
+    while(!FileSysmodel->fileName(tempindex).isEmpty()){
         open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, FileSysmodel->fileName(tempindex), FileSysmodel->filePath(tempindex));
         tempindex = FileSysmodel->parent(tempindex);
         i++;

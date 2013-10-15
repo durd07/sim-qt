@@ -19,21 +19,27 @@ void CreateWorkspaceDialog::changeWorkspace(void) {
 void CreateWorkspaceDialog::mkdir()
 {
     QModelIndex index = create_workspace_dialog_ui_->DirecotoryTreeView->currentIndex();
-    if (!index.isValid())
-    {
+    if (!index.isValid()){
         return;
     }
 
-//    QString dirName = create_workspace_dialog_ui_->FilenameLineEdit->text();
-//    if (!dirName.isEmpty())
-//    {
-        QModelIndex new_index = FileSysmodel->mkdir(index, tr("New\ Folder"));
-        if (!new_index.isValid())
-        {
-            QMessageBox::information(this,"Create Directory","Failed to create the directory");
-        }
-        create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(new_index);    //定位到当前项
-//    }
+    int i = 2;
+    QString dirName = tr("New\ Folder");
+    QString newdirname = FileSysmodel->filePath(index) + "/" + dirName;
+
+    while(FileSysmodel->index(newdirname).isValid()){
+        dirName = tr("New\ Folder") + "(" + QString::number(i) + ")";
+        newdirname = FileSysmodel->filePath(index) + "/" + dirName;
+        i++;
+    }
+
+    QModelIndex new_index = FileSysmodel->mkdir(index, newdirname);
+    if (!new_index.isValid()){
+        QMessageBox::information(this,"Create Directory","Failed to create the directory");
+    }
+    create_workspace_dialog_ui_->DirecotoryTreeView->visualRect(new_index);
+
+    //create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(new_index);    //定位到当前项
 }
 
 void CreateWorkspaceDialog::slotShowFilName(QModelIndex index)

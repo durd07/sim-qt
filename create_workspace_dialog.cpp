@@ -26,8 +26,11 @@ CreateWorkspaceDialog::CreateWorkspaceDialog(QWidget *parent) :
     create_workspace_dialog_ui_->DirecotoryTreeView->setModel(FileSysmodel);
     create_workspace_dialog_ui_->DirecotoryTreeView->setRootIndex(modelIndex);
     create_workspace_dialog_ui_->DirecotoryTreeView->setHeaderHidden(true);
-    create_workspace_dialog_ui_->DirecotoryTreeView->expand(modelIndex);      //当前项展开
-    create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(modelIndex);    //定位到当前项
+//    create_workspace_dialog_ui_->DirecotoryTreeView->expand(modelIndex);      //当前项展开
+//    create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(modelIndex);    //定位到当前项
+    create_workspace_dialog_ui_->DirecotoryTreeView->setRootIsDecorated(false);
+//    create_workspace_dialog_ui_->DirecotoryTreeView->setEditTriggers(QAbstractItemView::CurrentChanged | QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | QAbstractItemView::AnyKeyPressed);
+    //create_workspace_dialog_ui_->DirecotoryTreeView->sete
     for(int i = 1; i < 4; i++)
     {
         create_workspace_dialog_ui_->DirecotoryTreeView->hideColumn(i);
