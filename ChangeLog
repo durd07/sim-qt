@@ -1,3 +1,19 @@
+相对版本675baec8d46f90a5804716326d443d66b6cd140f
+新增功能如下：
+1.完善了 open_checkpoint dialog,动作特性与simics相同
+2.完善了 open_workspace dialog，使能够正常显示treeview，并可以create new folder
+3.添加了 open empty session functon
+4.修正了 main window 的 statusbar显示。
+5.变更了 open_checkpoint的parent class，QWidegt->QDialog，为了实现exec（）
+存在问题点：
+1、open_workspace dialog不能显示windows的native 文件目录结构，只能显示从盘符开始的treeview
+2、open_workspace dialog 鼠标右键Action未定义，期待现象，打开右键菜单，可以执行文件操作
+3、open_workspace dialog 新建文件夹后，不能自动定位到新建的文件夹并处于可编辑文件夹名状态
+4、open_checkpoint dialog的filter使用的是".sim" 具体filter应该是什么未定义
+5、workspace path暂时定义，以后修正
+存在疑问点：
+1、open_workspace dialog和open_checkpoint dialog等为什么是main window create时建立，而不是点击menu button时建立
+2、运行程序时出现的Terminal如何去掉
 commit af0c540084b62704b0ac48f15aa6ac7935c74b57
 Author: DURD <durd@SUSE.site>
 Date:   Tue Oct 15 19:00:08 2013 +0800
