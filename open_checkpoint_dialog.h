@@ -20,8 +20,6 @@ private:
     void initSelectDirectoryComboBox(QModelIndex index);
     void showFileInfoList(QModelIndex index);
 private slots:
-    void openCheckpoint(void);
-    void appendFromCheckpoint(void);
     void slotShowDir(QModelIndex index);
     void slotSelectDirectoryChanged(int index);
     void slotUPButton();

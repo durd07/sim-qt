@@ -50,17 +50,17 @@ void MainWindow::setFileMenu(void) {
     connect(main_ui_->actionNewSessionFromScript, SIGNAL(triggered()),
             this, SLOT(newSessionFromScript()));
     connect(main_ui_->actionOpenCheckpoint, SIGNAL(triggered()),
-            &this->open_checkpoint_dialog, SLOT(openCheckpoint()));
+            this, SLOT(openCheckpoint()));
     connect(main_ui_->actionAppendFromScript, SIGNAL(triggered()),
             this, SLOT(appendFromScript()));
     connect(main_ui_->actionAppendFromCheckpoint, SIGNAL(triggered()),
-            &this->open_checkpoint_dialog, SLOT(appendFromCheckpoint()));
+            this, SLOT(appendFromCheckpoint()));
     connect(main_ui_->actionRunPythonFile, SIGNAL(triggered()),
             this, SLOT(runPythonFile()));
     connect(main_ui_->actionCreateWorkspace, SIGNAL(triggered()),
-            &this->create_workspace_dialog, SLOT(createWorkspace()));
+            this, SLOT(createWorkspace()));
     connect(main_ui_->actionChangeWorkspace, SIGNAL(triggered()),
-            &this->create_workspace_dialog, SLOT(changeWorkspace()));
+            this, SLOT(changeWorkspace()));
     connect(main_ui_->actionExit, SIGNAL(triggered()),
             simApp, SLOT(closeAllWindows()));
 

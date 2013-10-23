@@ -2,14 +2,6 @@
 #include "open_checkpoint_dialog.h"
 #include "ui_open_checkpoint_dialog.h"
 
-void OpenCheckpointDialog::openCheckpoint(void) {
-    this->exec();
-}
-
-void OpenCheckpointDialog::appendFromCheckpoint(void) {
-    this->exec();
-}
-
 void OpenCheckpointDialog::slotShowDir(QModelIndex index){
     if(FileSysmodel->isDir(index))
     {
@@ -52,8 +44,6 @@ void OpenCheckpointDialog::slotSimCheckpointComboBox(int index)
 
     QVariant ItemData = open_checkpoint_dialog_ui_->SelectDirectoryComboBox->itemData(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
     QString ItemString = ItemData.value<QString>();
-
-    //initSelectDirectoryComboBox(FileSysmodel->index(ItemString));
 
     showFileInfoList(FileSysmodel->index(ItemString));
 

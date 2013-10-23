@@ -11,7 +11,7 @@ TARGET = sim-qt
 INCLUDEPATH += .
 
 DEFINES += QT_DLL
-CONFIG  +=  console plugin link_pkgconfig
+CONFIG  += plugin link_pkgconfig
 
 SOURCES += main.cpp\
                    main_window.cpp\

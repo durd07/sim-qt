@@ -4,7 +4,7 @@
 #include "ui_open_checkpoint_dialog.h"
 
 // golbel object, bad idea.
-QString WorkSpachPath;
+QString WorkSpachPath = QObject::tr("C:\\Users");
 
 OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
     QDialog(parent),
@@ -16,14 +16,10 @@ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
     FileSysmodel->setSorting(QDir::DirsFirst | QDir::IgnoreCase | QDir::Name);
 #else
     FileSysmodel = new QFileSystemModel();
+    FileSysmodel->sort(0);
 #endif
     FileSysmodel->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::Drives | QDir::NoDotAndDotDot);
-    FileSysmodel->sort(0);
-    QStringList string;
-    string << "*.sim";
-    FileSysmodel->setNameFilters(string);
-    //WorkSpachPath = FileSysmodel->myComputer().value<QString>();
-    WorkSpachPath = "C:\\Users";
+    FileSysmodel->setNameFilters(QStringList(QString("*.xml")));
 
 #ifdef _USE_DIRMODEL
     QModelIndex modelIndex = FileSysmodel->index(WorkSpachPath);

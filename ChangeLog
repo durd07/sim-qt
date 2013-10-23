@@ -1,3 +1,345 @@
+diff --git a/create_workspace_dialog.cpp b/create_workspace_dialog.cpp
+index 48bc58f..de8cd32 100644
+--- a/create_workspace_dialog.cpp
++++ b/create_workspace_dialog.cpp
+@@ -1,41 +1,30 @@
+-#include <QDirModel>
+ #include <QStandardPaths>
+-#include <QFileSystemModel>
+ #include <QModelIndex>
+ #include <QMessageBox>
+ #include "create_workspace_dialog.h"
+ #include "ui_create_workspace_dialog.h"
+ 
+-CreateWorkspaceDialog::CreateWorkspaceDialog(QWidget *parent) :
+-    QWidget(parent),
++CreateWorkspaceDialog::CreateWorkspaceDialog(QString dialog_info, QDialog *parent) :
++    QDialog(parent),
+     create_workspace_dialog_ui_(new Ui::CreateWorkspaceDialog) {
+     create_workspace_dialog_ui_->setupUi(this);
+-#if 1
+-//    QDirModel *dirmodel = new QDirModel(this);
+-
+-//    QString home_files = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+-//    QModelIndex homeIndex = dirmodel->index(home_files);
+-//    QString desktop_path = QStandardPaths::storageLocation(QStandardPaths::DesktopLocation);
+-//    QString document_path = QStandardPaths::storageLocation(QStandardPaths::DocumentsLocation);
+-//    QString home_path = QStandardPaths::storageLocation(QStandardPaths::HomeLocation);
+-//    QString application_path = QStandardPaths::storageLocatio(QStandardPaths::ApplicationsLocation);
+-//    QString temp_path = QStandardPaths::storageLocation(QStandardPaths::TempLocation);
++    create_workspace_dialog_ui_->DialogInfoLabel->setText(dialog_info);
+ 
+     FileSysmodel = new QFileSystemModel;
++    FileSysmodel->setReadOnly(false);
++    FileSysmodel->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::Drives | QDir::NoDotAndDotDot);
++
+     QModelIndex modelIndex = FileSysmodel->setRootPath(FileSysmodel->myComputer().value<QString>());
+     create_workspace_dialog_ui_->DirecotoryTreeView->setModel(FileSysmodel);
+     create_workspace_dialog_ui_->DirecotoryTreeView->setRootIndex(modelIndex);
++    create_workspace_dialog_ui_->DirecotoryTreeView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed/* | QAbstractItemView::AnyKeyPressed*/);
+     create_workspace_dialog_ui_->DirecotoryTreeView->setHeaderHidden(true);
+-//    create_workspace_dialog_ui_->DirecotoryTreeView->expand(modelIndex);      //当前项展开
+-//    create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(modelIndex);    //定位到当前项
+-    create_workspace_dialog_ui_->DirecotoryTreeView->setRootIsDecorated(false);
+-//    create_workspace_dialog_ui_->DirecotoryTreeView->setEditTriggers(QAbstractItemView::CurrentChanged | QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | QAbstractItemView::AnyKeyPressed);
+-    //create_workspace_dialog_ui_->DirecotoryTreeView->sete
++
+     for(int i = 1; i < 4; i++)
+     {
+         create_workspace_dialog_ui_->DirecotoryTreeView->hideColumn(i);
+     }
+-#endif
++
+     connect(create_workspace_dialog_ui_->CreateDirectoryButton, SIGNAL(clicked()), this , SLOT(mkdir()));
+     connect(create_workspace_dialog_ui_->DirecotoryTreeView, SIGNAL(clicked(QModelIndex)), this , SLOT(slotShowFilName(QModelIndex)));
+ }
+diff --git a/create_workspace_dialog.h b/create_workspace_dialog.h
+index 03c4bf3..46dae3e 100644
+--- a/create_workspace_dialog.h
++++ b/create_workspace_dialog.h
+@@ -1,24 +1,21 @@
+ #ifndef CREATE_WORKSPACE_DIALOG_H
+ #define CREATE_WORKSPACE_DIALOG_H
+ 
+-#include <QWidget>
++#include <QDialog>
+ #include <QFileSystemModel>
+ 
+-class QDirModel;
+-
+ namespace Ui {
+     class CreateWorkspaceDialog;
+ }
+ 
+-class CreateWorkspaceDialog : public QWidget {
++class CreateWorkspaceDialog : public QDialog {
+     Q_OBJECT
+ 
+ public:
+-    explicit CreateWorkspaceDialog(QWidget *parent = 0);
++    explicit CreateWorkspaceDialog(QString dialog_info = tr("Select directory to use as workspace ..."), QDialog *parent = 0);
+     ~CreateWorkspaceDialog();
++
+ private slots:
+-    void createWorkspace(void);
+-    void changeWorkspace(void);
+     void mkdir();
+     void on_SureButton_clicked();
+     void slotShowFilName(QModelIndex index);
+diff --git a/create_workspace_dialog_slots.cpp b/create_workspace_dialog_slots.cpp
+index 28a5a7e..03791d4 100644
+--- a/create_workspace_dialog_slots.cpp
++++ b/create_workspace_dialog_slots.cpp
+@@ -2,20 +2,6 @@
+ #include "ui_create_workspace_dialog.h"
+ #include <QMessageBox>
+ 
+-void CreateWorkspaceDialog::createWorkspace(void) {
+-    this->create_workspace_dialog_ui_
+-        ->DialogInfoLabel->setText(QApplication::translate("CreateWorkspaceDialog",
+-                                                           "Select directory to use as workspace ...", 0));
+-    this->show();
+-}
+-
+-void CreateWorkspaceDialog::changeWorkspace(void) {
+-    this->create_workspace_dialog_ui_
+-        ->DialogInfoLabel->setText(QApplication::translate("CreateWorkspaceDialog",
+-                                                           "Select workspace to use ...", 0));
+-    this->show();
+-}
+-
+ void CreateWorkspaceDialog::mkdir()
+ {
+     QModelIndex index = create_workspace_dialog_ui_->DirecotoryTreeView->currentIndex();
+@@ -33,19 +19,19 @@ void CreateWorkspaceDialog::mkdir()
+         i++;
+     }
+ 
+-    QModelIndex new_index = FileSysmodel->mkdir(index, newdirname);
++    FileSysmodel->mkdir(index, newdirname);
++    QModelIndex new_index = FileSysmodel->index(newdirname);
++
+     if (!new_index.isValid()){
+         QMessageBox::information(this,"Create Directory","Failed to create the directory");
+     }
+-    create_workspace_dialog_ui_->DirecotoryTreeView->visualRect(new_index);
+ 
+-    //create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(new_index);    //定位到当前项
++    create_workspace_dialog_ui_->DirecotoryTreeView->setCurrentIndex(new_index);
+ }
+ 
+ void CreateWorkspaceDialog::slotShowFilName(QModelIndex index)
+ {
+-    create_workspace_dialog_ui_->DirecotoryTreeView->expand(index);      //当前项展开
+-    create_workspace_dialog_ui_->DirecotoryTreeView->scrollTo(index);    //定位到当前项
++    create_workspace_dialog_ui_->DirecotoryTreeView->expand(index);
+     create_workspace_dialog_ui_->FilenameLineEdit->setText(FileSysmodel->fileName(index));
+ }
+ 
+diff --git a/main_window.cpp b/main_window.cpp
+index c953964..3618f19 100644
+--- a/main_window.cpp
++++ b/main_window.cpp
+@@ -50,17 +50,17 @@ void MainWindow::setFileMenu(void) {
+     connect(main_ui_->actionNewSessionFromScript, SIGNAL(triggered()),
+             this, SLOT(newSessionFromScript()));
+     connect(main_ui_->actionOpenCheckpoint, SIGNAL(triggered()),
+-            &this->open_checkpoint_dialog, SLOT(openCheckpoint()));
++            this, SLOT(openCheckpoint()));
+     connect(main_ui_->actionAppendFromScript, SIGNAL(triggered()),
+             this, SLOT(appendFromScript()));
+     connect(main_ui_->actionAppendFromCheckpoint, SIGNAL(triggered()),
+-            &this->open_checkpoint_dialog, SLOT(appendFromCheckpoint()));
++            this, SLOT(appendFromCheckpoint()));
+     connect(main_ui_->actionRunPythonFile, SIGNAL(triggered()),
+             this, SLOT(runPythonFile()));
+     connect(main_ui_->actionCreateWorkspace, SIGNAL(triggered()),
+-            &this->create_workspace_dialog, SLOT(createWorkspace()));
++            this, SLOT(createWorkspace()));
+     connect(main_ui_->actionChangeWorkspace, SIGNAL(triggered()),
+-            &this->create_workspace_dialog, SLOT(changeWorkspace()));
++            this, SLOT(changeWorkspace()));
+     connect(main_ui_->actionExit, SIGNAL(triggered()),
+             simApp, SLOT(closeAllWindows()));
+ 
+diff --git a/main_window.h b/main_window.h
+index 6788825..00893fc 100644
+--- a/main_window.h
++++ b/main_window.h
+@@ -28,11 +28,15 @@ signals:
+ private slots:
+     void newEmptySession(void);
+     void newSessionFromScript(void);
++    void openCheckpoint(void);
+     bool saveCheckpoint(void);
+     void appendFromScript(void);
++    void appendFromCheckpoint(void);
+     bool loadPresistentState(void);
+     bool savePresitentState(void);
+     void runPythonFile(void);
++    void createWorkspace(void);
++    void changeWorkspace(void);
+ 
+ private:
+     void setToolsMenu(void);
+@@ -41,8 +45,7 @@ private slots:
+ 
+ private:
+     Ui::MainWindow *main_ui_;
+-    OpenCheckpointDialog open_checkpoint_dialog;
+-    CreateWorkspaceDialog create_workspace_dialog;
++
+     OpenCommandLineWindowDialog open_command_line_window_dialog;
+ };
+ 
+diff --git a/main_window_file_slots.cpp b/main_window_file_slots.cpp
+index b4037aa..77413ff 100644
+--- a/main_window_file_slots.cpp
++++ b/main_window_file_slots.cpp
+@@ -16,6 +16,10 @@ void MainWindow::newSessionFromScript(void) {
+ 
+     }
+ }
++void MainWindow::openCheckpoint(void) {
++    OpenCheckpointDialog open_checkpoint_dialog;
++    open_checkpoint_dialog.exec();
++}
+ 
+ bool MainWindow::saveCheckpoint(void) {
+     return true;
+@@ -31,6 +35,11 @@ void MainWindow::appendFromScript(void) {
+     }
+ }
+ 
++void MainWindow::appendFromCheckpoint(void) {
++    OpenCheckpointDialog open_checkpoint_dialog;
++    open_checkpoint_dialog.exec();
++}
++
+ bool MainWindow::loadPresistentState(void) {
+     return true;
+ }
+@@ -46,3 +55,35 @@ void MainWindow::runPythonFile(void) {
+                                                       tr("Python files (*.py)"));
+ }
+ 
++extern QString WorkSpachPath;
++void MainWindow::createWorkspace(void) {
++#if 0
++    CreateWorkspaceDialog create_workspace_dialog(tr("Select directory to use as workspace ..."));
++    create_workspace_dialog.exec();
++#else
++    QString workspace_path = QFileDialog::getExistingDirectory(this, tr("Select directory to use as workspace ..."),
++    WorkSpachPath,
++    QFileDialog::ShowDirsOnly
++    | QFileDialog::DontResolveSymlinks);
++
++    if (!workspace_path.isEmpty()) {
++
++    }
++#endif
++}
++
++void MainWindow::changeWorkspace(void) {
++#if 0
++    CreateWorkspaceDialog create_workspace_dialog("Select workspace to use ...");
++    create_workspace_dialog.exec();
++#else
++    QString workspace_path = QFileDialog::getExistingDirectory(this, tr("Select workspace to use ..."),
++    WorkSpachPath,
++    QFileDialog::ShowDirsOnly
++    | QFileDialog::DontResolveSymlinks);
++
++    if (!workspace_path.isEmpty()) {
++
++    }
++#endif
++}
+diff --git a/open_checkpoint_dialog.cpp b/open_checkpoint_dialog.cpp
+index 284dce9..b0a69a7 100644
+--- a/open_checkpoint_dialog.cpp
++++ b/open_checkpoint_dialog.cpp
+@@ -4,7 +4,7 @@
+ #include "ui_open_checkpoint_dialog.h"
+ 
+ // golbel object, bad idea.
+-QString WorkSpachPath;
++QString WorkSpachPath = QObject::tr("C:\\Users");
+ 
+ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
+     QDialog(parent),
+@@ -16,14 +16,10 @@ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
+     FileSysmodel->setSorting(QDir::DirsFirst | QDir::IgnoreCase | QDir::Name);
+ #else
+     FileSysmodel = new QFileSystemModel();
++    FileSysmodel->sort(0);
+ #endif
+     FileSysmodel->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::Drives | QDir::NoDotAndDotDot);
+-    FileSysmodel->sort(0);
+-    QStringList string;
+-    string << "*.sim";
+-    FileSysmodel->setNameFilters(string);
+-    //WorkSpachPath = FileSysmodel->myComputer().value<QString>();
+-    WorkSpachPath = "C:\\Users";
++    FileSysmodel->setNameFilters(QStringList(QString("*.xml")));
+ 
+ #ifdef _USE_DIRMODEL
+     QModelIndex modelIndex = FileSysmodel->index(WorkSpachPath);
+diff --git a/open_checkpoint_dialog.h b/open_checkpoint_dialog.h
+index 2b13831..6045e17 100644
+--- a/open_checkpoint_dialog.h
++++ b/open_checkpoint_dialog.h
+@@ -20,8 +20,6 @@ private:
+     void initSelectDirectoryComboBox(QModelIndex index);
+     void showFileInfoList(QModelIndex index);
+ private slots:
+-    void openCheckpoint(void);
+-    void appendFromCheckpoint(void);
+     void slotShowDir(QModelIndex index);
+     void slotSelectDirectoryChanged(int index);
+     void slotUPButton();
+diff --git a/open_checkpoint_dialog_slots.cpp b/open_checkpoint_dialog_slots.cpp
+index 6deb0b9..78c09c0 100644
+--- a/open_checkpoint_dialog_slots.cpp
++++ b/open_checkpoint_dialog_slots.cpp
+@@ -2,14 +2,6 @@
+ #include "open_checkpoint_dialog.h"
+ #include "ui_open_checkpoint_dialog.h"
+ 
+-void OpenCheckpointDialog::openCheckpoint(void) {
+-    this->exec();
+-}
+-
+-void OpenCheckpointDialog::appendFromCheckpoint(void) {
+-    this->exec();
+-}
+-
+ void OpenCheckpointDialog::slotShowDir(QModelIndex index){
+     if(FileSysmodel->isDir(index))
+     {
+@@ -53,8 +45,6 @@ void OpenCheckpointDialog::slotSimCheckpointComboBox(int index)
+     QVariant ItemData = open_checkpoint_dialog_ui_->SelectDirectoryComboBox->itemData(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
+     QString ItemString = ItemData.value<QString>();
+ 
+-    //initSelectDirectoryComboBox(FileSysmodel->index(ItemString));
+-
+     showFileInfoList(FileSysmodel->index(ItemString));
+ 
+ }
+diff --git a/sim-qt.pro b/sim-qt.pro
+index 6c42290..e0e7bfc 100644
+--- a/sim-qt.pro
++++ b/sim-qt.pro
+@@ -11,7 +11,7 @@ TARGET = sim-qt
+ INCLUDEPATH += .
+ 
+ DEFINES += QT_DLL
+-CONFIG  +=  console plugin link_pkgconfig
++CONFIG  += plugin link_pkgconfig
+ 
+ SOURCES += main.cpp\
+                    main_window.cpp\
+====================================================================================
 相对版本675baec8d46f90a5804716326d443d66b6cd140f
 新增功能如下：
 1.完善了 open_checkpoint dialog,动作特性与simics相同
