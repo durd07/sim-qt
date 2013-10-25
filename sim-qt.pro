@@ -11,10 +11,10 @@ TARGET = sim-qt
 INCLUDEPATH += .
 
 DEFINES += QT_DLL
-CONFIG  +=  console plugin link_pkgconfig
+CONFIG  += plugin link_pkgconfig
 
 SOURCES += main.cpp\
-		   main_window.cpp\
+                   main_window.cpp\
            main_window_file_slots.cpp\
            open_checkpoint_dialog.cpp\
            open_checkpoint_dialog_slots.cpp\

@@ -1,24 +1,21 @@
 #ifndef CREATE_WORKSPACE_DIALOG_H
 #define CREATE_WORKSPACE_DIALOG_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QFileSystemModel>
-
-class QDirModel;
 
 namespace Ui {
     class CreateWorkspaceDialog;
 }
 
-class CreateWorkspaceDialog : public QWidget {
+class CreateWorkspaceDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit CreateWorkspaceDialog(QWidget *parent = 0);
+    explicit CreateWorkspaceDialog(QString dialog_info = tr("Select directory to use as workspace ..."), QDialog *parent = 0);
     ~CreateWorkspaceDialog();
+
 private slots:
-    void createWorkspace(void);
-    void changeWorkspace(void);
     void mkdir();
     void on_SureButton_clicked();
     void slotShowFilName(QModelIndex index);

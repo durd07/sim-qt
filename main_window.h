@@ -28,11 +28,15 @@ signals:
 private slots:
     void newEmptySession(void);
     void newSessionFromScript(void);
+    void openCheckpoint(void);
     bool saveCheckpoint(void);
     void appendFromScript(void);
+    void appendFromCheckpoint(void);
     bool loadPresistentState(void);
     bool savePresitentState(void);
     void runPythonFile(void);
+    void createWorkspace(void);
+    void changeWorkspace(void);
 
 private:
     void setToolsMenu(void);
@@ -41,8 +45,7 @@ private slots:
 
 private:
     Ui::MainWindow *main_ui_;
-    OpenCheckpointDialog open_checkpoint_dialog;
-    CreateWorkspaceDialog create_workspace_dialog;
+
     OpenCommandLineWindowDialog open_command_line_window_dialog;
 };
 
