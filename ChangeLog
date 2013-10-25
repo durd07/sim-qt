@@ -1,3 +1,35 @@
+diff --git a/ChangeLog b/ChangeLog
+index 3b4e56e..7836e9d 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,11 @@
++=====================================================
++commit eb6312ffef57dd3d6ce3551a2d5ecc4407cb4f59
++Merge: 99ee752 0484e7a
++Author: root <root@SUSE.site>
++Date:   Fri Oct 25 16:20:22 2013 +0800
++
++    Merge branch 'develop' of https://github.com/durd07/sim-qt
++
+ diff --git a/create_workspace_dialog.cpp b/create_workspace_dialog.cpp
+ index 48bc58f..de8cd32 100644
+ --- a/create_workspace_dialog.cpp
+=====================================================
+commit eb6312ffef57dd3d6ce3551a2d5ecc4407cb4f59
+Merge: 99ee752 0484e7a
+Author: root <root@SUSE.site>
+Date:   Fri Oct 25 16:20:22 2013 +0800
+
+    Merge branch 'develop' of https://github.com/durd07/sim-qt
+
+=====================================================
+commit eb6312ffef57dd3d6ce3551a2d5ecc4407cb4f59
+Merge: 99ee752 0484e7a
+Author: root <root@SUSE.site>
+Date:   Fri Oct 25 16:20:22 2013 +0800
+
+    Merge branch 'develop' of https://github.com/durd07/sim-qt
+
 diff --git a/create_workspace_dialog.cpp b/create_workspace_dialog.cpp
 index 48bc58f..de8cd32 100644
 --- a/create_workspace_dialog.cpp
