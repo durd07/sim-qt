@@ -1,3 +1,16 @@
+=====================================================
+commit 5ed537d4cb5a084b6930a7ab0f48ffe98efc8ec3
+Author: durd07 <durd07@gmial.com>
+Date:   Thu Oct 31 23:22:00 2013 +0800
+
+    polish the command_line_window
+    
+    1. change open_command_line_window_dialog;
+    2. use pipe to communicate to main process;
+    Problems:
+    So far the command_line_window only work under gdb mode, it is not work
+    at normal mode. Maybe it's because of full buffer.
+
 diff --git a/cli.ui b/cli.ui
 index a7ccebd..83a05f0 100644
 --- a/cli.ui
