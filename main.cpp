@@ -1,7 +1,11 @@
 #include "sim_application.h"
 #include "main_window.h"
 
-int main(int argc, char *argv[])
+#ifdef __cplusplus
+extern "C" {
+#endif
+int simqt_main(int argc, char *argv[])
+//int main(int argc, char *argv[])
 {
     SimApplication sim_app(argc, argv);
     MainWindow *main_w;
@@ -12,3 +16,6 @@ int main(int argc, char *argv[])
     return simApp->exec();
 }
 
+#ifdef __cplusplus
+}
+#endif

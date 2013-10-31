@@ -65,7 +65,7 @@ void MainWindow::setFileMenu(void) {
             simApp, SLOT(closeAllWindows()));
 
     connect(main_ui_->actionCommandLineWindow, SIGNAL(triggered()),
-            &this->open_command_line_window_dialog, SLOT(openCommandLineWindow()));
+            this, SLOT(openCommandLineWindow()));
 }
 
 MainWindow::~MainWindow() {

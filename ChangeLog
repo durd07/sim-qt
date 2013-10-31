@@ -1,3 +1,239 @@
+diff --git a/cli.ui b/cli.ui
+index a7ccebd..83a05f0 100644
+--- a/cli.ui
++++ b/cli.ui
+@@ -16,18 +16,7 @@
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+-  <layout class="QGridLayout" name="gridLayout">
+-   <item row="0" column="0">
+-    <widget class="QPlainTextEdit" name="commandPlainTextEdit">
+-     <property name="layoutDirection">
+-      <enum>Qt::LeftToRight</enum>
+-     </property>
+-     <property name="autoFillBackground">
+-      <bool>true</bool>
+-     </property>
+-    </widget>
+-   </item>
+-  </layout>
++  <layout class="QGridLayout" name="gridLayout"/>
+  </widget>
+  <resources/>
+  <connections/>
+diff --git a/create_workspace_dialog.cpp b/create_workspace_dialog.cpp
+index de8cd32..d683cfc 100644
+--- a/create_workspace_dialog.cpp
++++ b/create_workspace_dialog.cpp
+@@ -4,6 +4,7 @@
+ #include "create_workspace_dialog.h"
+ #include "ui_create_workspace_dialog.h"
+ 
++extern QString WorkSpachPath;
+ CreateWorkspaceDialog::CreateWorkspaceDialog(QString dialog_info, QDialog *parent) :
+     QDialog(parent),
+     create_workspace_dialog_ui_(new Ui::CreateWorkspaceDialog) {
+@@ -19,6 +20,8 @@ CreateWorkspaceDialog::CreateWorkspaceDialog(QString dialog_info, QDialog *paren
+     create_workspace_dialog_ui_->DirecotoryTreeView->setRootIndex(modelIndex);
+     create_workspace_dialog_ui_->DirecotoryTreeView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed/* | QAbstractItemView::AnyKeyPressed*/);
+     create_workspace_dialog_ui_->DirecotoryTreeView->setHeaderHidden(true);
++    create_workspace_dialog_ui_->DirecotoryTreeView->setCurrentIndex(FileSysmodel->index(WorkSpachPath));
++    create_workspace_dialog_ui_->FilenameLineEdit->setText(FileSysmodel->fileName(FileSysmodel->index(WorkSpachPath)));
+ 
+     for(int i = 1; i < 4; i++)
+     {
+diff --git a/main.cpp b/main.cpp
+index 00d6a1f..106c2ae 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -1,7 +1,11 @@
+ #include "sim_application.h"
+ #include "main_window.h"
+ 
+-int main(int argc, char *argv[])
++#ifdef __cplusplus
++extern "C" {
++#endif
++int simqt_main(int argc, char *argv[])
++//int main(int argc, char *argv[])
+ {
+     SimApplication sim_app(argc, argv);
+     MainWindow *main_w;
+@@ -12,3 +16,6 @@ int main(int argc, char *argv[])
+     return simApp->exec();
+ }
+ 
++#ifdef __cplusplus
++}
++#endif
+diff --git a/main_window.cpp b/main_window.cpp
+index 3618f19..b41b627 100644
+--- a/main_window.cpp
++++ b/main_window.cpp
+@@ -65,7 +65,7 @@ void MainWindow::setFileMenu(void) {
+             simApp, SLOT(closeAllWindows()));
+ 
+     connect(main_ui_->actionCommandLineWindow, SIGNAL(triggered()),
+-            &this->open_command_line_window_dialog, SLOT(openCommandLineWindow()));
++            this, SLOT(openCommandLineWindow()));
+ }
+ 
+ MainWindow::~MainWindow() {
+diff --git a/main_window.h b/main_window.h
+index 00893fc..8b05a05 100644
+--- a/main_window.h
++++ b/main_window.h
+@@ -38,6 +38,8 @@ private slots:
+     void createWorkspace(void);
+     void changeWorkspace(void);
+ 
++    void openCommandLineWindow(void);
++
+ private:
+     void setToolsMenu(void);
+ signals:
+diff --git a/open_command_line_window_dialog.cpp b/open_command_line_window_dialog.cpp
+index 24bf2db..52bd36b 100644
+--- a/open_command_line_window_dialog.cpp
++++ b/open_command_line_window_dialog.cpp
+@@ -1,13 +1,20 @@
+ #include "open_command_line_window_dialog.h"
+-#include "ui_cli.h"
++#include "qsim_console.h"
++#include <QVBoxLayout>
+ 
+ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+-    QWidget(parent),
+-    open_command_line_window_dialog_ui_(new Ui::OpenCommandLineWindowDialog) {
+-    open_command_line_window_dialog_ui_->setupUi(this);
++    QWidget(parent){
++    QSimConsole *console = QSimConsole::getInstance(this);
++    this->setFocusProxy((QWidget*)console);
++    this->setMinimumSize(640, 480);
++    this->setWindowTitle(tr("Simics Command Line"));
++
++    layout = new QVBoxLayout;
++    layout->addWidget(console);
++    this->setLayout(layout);
++
+ }
+ 
+ OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
+-    delete open_command_line_window_dialog_ui_;
+ }
+ 
+diff --git a/open_command_line_window_dialog.h b/open_command_line_window_dialog.h
+index 0bb516a..39c57a1 100644
+--- a/open_command_line_window_dialog.h
++++ b/open_command_line_window_dialog.h
+@@ -3,9 +3,7 @@
+ 
+ #include <QWidget>
+ 
+-namespace Ui {
+-    class OpenCommandLineWindowDialog;
+-}
++class QVBoxLayout;
+ 
+ class OpenCommandLineWindowDialog : public QWidget {
+     Q_OBJECT
+@@ -14,11 +12,8 @@ public:
+     explicit OpenCommandLineWindowDialog(QWidget *parent = 0);
+     ~OpenCommandLineWindowDialog();
+ 
+-private slots:
+-    void openCommandLineWindow(void);
+-
+ private:
+-    Ui::OpenCommandLineWindowDialog *open_command_line_window_dialog_ui_;
++    QVBoxLayout *layout;
+ };
+ 
+ #endif
+diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
+index e441295..fdd7761 100644
+--- a/open_command_line_window_dialog_slots.cpp
++++ b/open_command_line_window_dialog_slots.cpp
+@@ -1,6 +1,7 @@
+ #include "open_command_line_window_dialog.h"
+ #include "ui_cli.h"
+-
++/*
+ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
+     this->show();
+ }
++*/
+diff --git a/sim-qt.pro b/sim-qt.pro
+index e0e7bfc..5742f13 100644
+--- a/sim-qt.pro
++++ b/sim-qt.pro
+@@ -6,30 +6,37 @@ QT       += core gui
+ 
+ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+ 
+-TEMPLATE = app
+-TARGET = sim-qt
++TEMPLATE = lib
++TARGET = simqt
+ INCLUDEPATH += .
+ 
+ DEFINES += QT_DLL
+ CONFIG  += plugin link_pkgconfig
+-
++#CONFIG   += staticlib
+ SOURCES += main.cpp\
+-                   main_window.cpp\
+-           main_window_file_slots.cpp\
+-           open_checkpoint_dialog.cpp\
+-           open_checkpoint_dialog_slots.cpp\
+-           create_workspace_dialog.cpp\
+-           create_workspace_dialog_slots.cpp\
+-           open_command_line_window_dialog.cpp\
+-           open_command_line_window_dialog_slots.cpp\
+-           sim_application.cpp
++	main_window.cpp\
++        main_window_file_slots.cpp\
++        open_checkpoint_dialog.cpp\
++        open_checkpoint_dialog_slots.cpp\
++        create_workspace_dialog.cpp\
++        create_workspace_dialog_slots.cpp\
++        open_command_line_window_dialog.cpp\
++        open_command_line_window_dialog_slots.cpp\
++        sim_application.cpp \
++	qconsole.cpp \
++	qsim_console.cpp \
++	main_window_tool_slots.cpp \
++	tsh_if.cpp
+ 
+ HEADERS += main_window.h\
+-           sim_application.h\
+-           open_checkpoint_dialog.h\
+-           open_command_line_window_dialog.h\
+-           create_workspace_dialog.h
+-
+-FORMS += cli.ui main_window.ui open_checkpoint_dialog.ui create_workspace_dialog.ui
++	sim_application.h\
++        open_checkpoint_dialog.h\
++        open_command_line_window_dialog.h\
++        create_workspace_dialog.h \
++    	qconsole.h \
++    	qsim_console.h \
++    	tsh_if.h
++
++FORMS += main_window.ui open_checkpoint_dialog.ui create_workspace_dialog.ui
+ 
+ RESOURCES = icons.qrc
+=====================================================
+commit faccb1607d09f049763d425b3e33b467294968aa
+Author: root <root@SUSE.site>
+Date:   Fri Oct 25 16:21:31 2013 +0800
+
+    add commit.sh
+    
+    in order to change ChangLog easier
+    add the new file commit.sh to make it automacially
+
 diff --git a/ChangeLog b/ChangeLog
 index 3b4e56e..7836e9d 100644
 --- a/ChangeLog

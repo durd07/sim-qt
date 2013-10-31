@@ -1,13 +1,20 @@
 #include "open_command_line_window_dialog.h"
-#include "ui_cli.h"
+#include "qsim_console.h"
+#include <QVBoxLayout>
 
 OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
-    QWidget(parent),
-    open_command_line_window_dialog_ui_(new Ui::OpenCommandLineWindowDialog) {
-    open_command_line_window_dialog_ui_->setupUi(this);
+    QWidget(parent){
+    QSimConsole *console = QSimConsole::getInstance(this);
+    this->setFocusProxy((QWidget*)console);
+    this->setMinimumSize(640, 480);
+    this->setWindowTitle(tr("Simics Command Line"));
+
+    layout = new QVBoxLayout;
+    layout->addWidget(console);
+    this->setLayout(layout);
+
 }
 
 OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
-    delete open_command_line_window_dialog_ui_;
 }
 

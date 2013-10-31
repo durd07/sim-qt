@@ -3,9 +3,7 @@
 
 #include <QWidget>
 
-namespace Ui {
-    class OpenCommandLineWindowDialog;
-}
+class QVBoxLayout;
 
 class OpenCommandLineWindowDialog : public QWidget {
     Q_OBJECT
@@ -14,11 +12,8 @@ public:
     explicit OpenCommandLineWindowDialog(QWidget *parent = 0);
     ~OpenCommandLineWindowDialog();
 
-private slots:
-    void openCommandLineWindow(void);
-
 private:
-    Ui::OpenCommandLineWindowDialog *open_command_line_window_dialog_ui_;
+    QVBoxLayout *layout;
 };
 
 #endif

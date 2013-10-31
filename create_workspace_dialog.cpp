@@ -4,6 +4,7 @@
 #include "create_workspace_dialog.h"
 #include "ui_create_workspace_dialog.h"
 
+extern QString WorkSpachPath;
 CreateWorkspaceDialog::CreateWorkspaceDialog(QString dialog_info, QDialog *parent) :
     QDialog(parent),
     create_workspace_dialog_ui_(new Ui::CreateWorkspaceDialog) {
@@ -19,6 +20,8 @@ CreateWorkspaceDialog::CreateWorkspaceDialog(QString dialog_info, QDialog *paren
     create_workspace_dialog_ui_->DirecotoryTreeView->setRootIndex(modelIndex);
     create_workspace_dialog_ui_->DirecotoryTreeView->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed/* | QAbstractItemView::AnyKeyPressed*/);
     create_workspace_dialog_ui_->DirecotoryTreeView->setHeaderHidden(true);
+    create_workspace_dialog_ui_->DirecotoryTreeView->setCurrentIndex(FileSysmodel->index(WorkSpachPath));
+    create_workspace_dialog_ui_->FilenameLineEdit->setText(FileSysmodel->fileName(FileSysmodel->index(WorkSpachPath)));
 
     for(int i = 1; i < 4; i++)
     {

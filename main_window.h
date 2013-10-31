@@ -38,6 +38,8 @@ private slots:
     void createWorkspace(void);
     void changeWorkspace(void);
 
+    void openCommandLineWindow(void);
+
 private:
     void setToolsMenu(void);
 signals:
