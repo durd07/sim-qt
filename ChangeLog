@@ -1,3 +1,944 @@
+diff --git a/ChangeLog b/ChangeLog
+index 0b84325..7942b04 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,404 @@
++diff --git a/ChangeLog b/ChangeLog
++index 0b84325..eafceb0 100644
++--- a/ChangeLog
+++++ b/ChangeLog
++@@ -1,3 +1,134 @@
+++diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
+++index fdd7761..c7ade15 100644
+++--- a/open_command_line_window_dialog_slots.cpp
++++++ b/open_command_line_window_dialog_slots.cpp
+++@@ -1,5 +1,5 @@
+++ #include "open_command_line_window_dialog.h"
+++-#include "ui_cli.h"
++++//#include "ui_cli.h"
+++ /*
+++ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
+++     this->show();
+++diff --git a/sim-qt.pro b/sim-qt.pro
+++index 5742f13..93f8b79 100644
+++--- a/sim-qt.pro
++++++ b/sim-qt.pro
+++@@ -26,7 +26,7 @@ SOURCES += main.cpp\
+++ 	qconsole.cpp \
+++ 	qsim_console.cpp \
+++ 	main_window_tool_slots.cpp \
+++-	tsh_if.cpp
++++    tsh_if.c
+++ 
+++ HEADERS += main_window.h\
+++ 	sim_application.h\
+++diff --git a/tsh_if.c b/tsh_if.c
+++index 0aeec7a..0d6d966 100644
+++--- a/tsh_if.c
++++++ b/tsh_if.c
+++@@ -4,66 +4,31 @@
+++  **  E-mail      : xhyz008@163.com
+++  **  Created Time: Mon Oct 28 15:09:40 2013
+++  *******************************************************************************/
+++-#include <stdlib.h>
+++-#include <stdio.h>
+++ #include <string.h>
+++ #include <unistd.h>
+++-#include <QFile>
+++-#include <iostream>
+++-#include <QTextStream>
+++ 
+++-using namespace std;
+++-#ifdef __cplusplus
+++-extern "C" {
+++-#endif
++++extern int parent;
+++ 
+++-#include "tsh_if.h"
++++static char buffer[10000];
+++ 
+++-#ifdef __cplusplus
+++-}
+++-#endif
+++-
+++-int oldstdin;
+++-int oldstdout;
+++-int oldstderr;
+++-int inpipe[2];
+++-int outpipe[2];
+++-int errpipe[2];
++++void init_redestration() {
+++ 
+++-const int BUFSIZE=500000;
+++-char buffer[10000];
+++-int read_from_stdin = 1;
+++-
+++-FILE* stdout_id;
+++-FILE* stdin_id;
+++-void init_redestration()
+++-{
+++-    //read_from_stdin = 1;
+++-	oldstdin = dup(0);
+++-    oldstdout = dup(1);
+++-    oldstderr = dup(2);
+++-	pipe( inpipe );
+++-    pipe( outpipe );
+++-    pipe( errpipe );
+++-	dup2( inpipe[0], 0);
+++-    dup2( outpipe[1], 1 );
+++-    dup2( errpipe[1], 2 );
+++-    close(inpipe[0]);
+++-    close(outpipe[1]);
+++-    close(errpipe[1]);
+++ }
+++ 
+++-void destroy_redestration()
+++-{
+++-    //read_from_stdin = 1;
++++void destroy_redestration() {
+++ }
+++ 
+++-char* exec_command(char* cmd)
+++-{
+++-	int count = 0;
+++-    count = write( inpipe[1] , cmd, 10000);
++++char* exec_command(char* cmd) {
++++    if(write(parent, cmd, strlen(cmd)) < 0) {
++++        perror("write error!");
++++        return NULL;
++++    }
++++
+++     memset(buffer, 0, sizeof(buffer));
+++-    count = read( outpipe[0] , buffer, 10000 );
++++    if(read(parent, buffer, sizeof(buffer)) < 0) {
++++        perror("read error!");
++++        return NULL;
++++    }
+++     return buffer;
+++ }
+++ 
+++diff --git a/tsh_if.h b/tsh_if.h
+++index 0883e4b..7aa5aab 100644
+++--- a/tsh_if.h
++++++ b/tsh_if.h
+++@@ -7,9 +7,8 @@
+++ #ifndef TSH_IF_H
+++ #define TSH_IF_H
+++ 
+++-
+++-
+++ void init_redestration();
++++void destroy_redestration();
+++ char* exec_command(char* cmd);
+++ 
+++ #endif
+++=====================================================
+++commit 53cfb3b35c17b89f226ff8d48a5d02405e7ef4c0
+++Author: durd07 <durd07@gmial.com>
+++Date:   Thu Oct 31 23:27:33 2013 +0800
+++
+++    add new files
+++
++ =====================================================
++ commit 5ed537d4cb5a084b6930a7ab0f48ffe98efc8ec3
++ Author: durd07 <durd07@gmial.com>
++diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
++index fdd7761..c7ade15 100644
++--- a/open_command_line_window_dialog_slots.cpp
+++++ b/open_command_line_window_dialog_slots.cpp
++@@ -1,5 +1,5 @@
++ #include "open_command_line_window_dialog.h"
++-#include "ui_cli.h"
+++//#include "ui_cli.h"
++ /*
++ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
++     this->show();
++diff --git a/sim-qt.pro b/sim-qt.pro
++index 5742f13..93f8b79 100644
++--- a/sim-qt.pro
+++++ b/sim-qt.pro
++@@ -26,7 +26,7 @@ SOURCES += main.cpp\
++ 	qconsole.cpp \
++ 	qsim_console.cpp \
++ 	main_window_tool_slots.cpp \
++-	tsh_if.cpp
+++    tsh_if.c
++ 
++ HEADERS += main_window.h\
++ 	sim_application.h\
++diff --git a/tsh_if.c b/tsh_if.c
++index 0aeec7a..0d6d966 100644
++--- a/tsh_if.c
+++++ b/tsh_if.c
++@@ -4,66 +4,31 @@
++  **  E-mail      : xhyz008@163.com
++  **  Created Time: Mon Oct 28 15:09:40 2013
++  *******************************************************************************/
++-#include <stdlib.h>
++-#include <stdio.h>
++ #include <string.h>
++ #include <unistd.h>
++-#include <QFile>
++-#include <iostream>
++-#include <QTextStream>
++ 
++-using namespace std;
++-#ifdef __cplusplus
++-extern "C" {
++-#endif
+++extern int parent;
++ 
++-#include "tsh_if.h"
+++static char buffer[10000];
++ 
++-#ifdef __cplusplus
++-}
++-#endif
++-
++-int oldstdin;
++-int oldstdout;
++-int oldstderr;
++-int inpipe[2];
++-int outpipe[2];
++-int errpipe[2];
+++void init_redestration() {
++ 
++-const int BUFSIZE=500000;
++-char buffer[10000];
++-int read_from_stdin = 1;
++-
++-FILE* stdout_id;
++-FILE* stdin_id;
++-void init_redestration()
++-{
++-    //read_from_stdin = 1;
++-	oldstdin = dup(0);
++-    oldstdout = dup(1);
++-    oldstderr = dup(2);
++-	pipe( inpipe );
++-    pipe( outpipe );
++-    pipe( errpipe );
++-	dup2( inpipe[0], 0);
++-    dup2( outpipe[1], 1 );
++-    dup2( errpipe[1], 2 );
++-    close(inpipe[0]);
++-    close(outpipe[1]);
++-    close(errpipe[1]);
++ }
++ 
++-void destroy_redestration()
++-{
++-    //read_from_stdin = 1;
+++void destroy_redestration() {
++ }
++ 
++-char* exec_command(char* cmd)
++-{
++-	int count = 0;
++-    count = write( inpipe[1] , cmd, 10000);
+++char* exec_command(char* cmd) {
+++    if(write(parent, cmd, strlen(cmd)) < 0) {
+++        perror("write error!");
+++        return NULL;
+++    }
+++
++     memset(buffer, 0, sizeof(buffer));
++-    count = read( outpipe[0] , buffer, 10000 );
+++    if(read(parent, buffer, sizeof(buffer)) < 0) {
+++        perror("read error!");
+++        return NULL;
+++    }
++     return buffer;
++ }
++ 
++diff --git a/tsh_if.h b/tsh_if.h
++index 0883e4b..7aa5aab 100644
++--- a/tsh_if.h
+++++ b/tsh_if.h
++@@ -7,9 +7,8 @@
++ #ifndef TSH_IF_H
++ #define TSH_IF_H
++ 
++-
++-
++ void init_redestration();
+++void destroy_redestration();
++ char* exec_command(char* cmd);
++ 
++ #endif
++=====================================================
++commit 53cfb3b35c17b89f226ff8d48a5d02405e7ef4c0
++Author: durd07 <durd07@gmial.com>
++Date:   Thu Oct 31 23:27:33 2013 +0800
++
++    add new files
++
++diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
++index fdd7761..c7ade15 100644
++--- a/open_command_line_window_dialog_slots.cpp
+++++ b/open_command_line_window_dialog_slots.cpp
++@@ -1,5 +1,5 @@
++ #include "open_command_line_window_dialog.h"
++-#include "ui_cli.h"
+++//#include "ui_cli.h"
++ /*
++ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
++     this->show();
++diff --git a/sim-qt.pro b/sim-qt.pro
++index 5742f13..93f8b79 100644
++--- a/sim-qt.pro
+++++ b/sim-qt.pro
++@@ -26,7 +26,7 @@ SOURCES += main.cpp\
++ 	qconsole.cpp \
++ 	qsim_console.cpp \
++ 	main_window_tool_slots.cpp \
++-	tsh_if.cpp
+++    tsh_if.c
++ 
++ HEADERS += main_window.h\
++ 	sim_application.h\
++diff --git a/tsh_if.c b/tsh_if.c
++index 0aeec7a..0d6d966 100644
++--- a/tsh_if.c
+++++ b/tsh_if.c
++@@ -4,66 +4,31 @@
++  **  E-mail      : xhyz008@163.com
++  **  Created Time: Mon Oct 28 15:09:40 2013
++  *******************************************************************************/
++-#include <stdlib.h>
++-#include <stdio.h>
++ #include <string.h>
++ #include <unistd.h>
++-#include <QFile>
++-#include <iostream>
++-#include <QTextStream>
++ 
++-using namespace std;
++-#ifdef __cplusplus
++-extern "C" {
++-#endif
+++extern int parent;
++ 
++-#include "tsh_if.h"
+++static char buffer[10000];
++ 
++-#ifdef __cplusplus
++-}
++-#endif
++-
++-int oldstdin;
++-int oldstdout;
++-int oldstderr;
++-int inpipe[2];
++-int outpipe[2];
++-int errpipe[2];
+++void init_redestration() {
++ 
++-const int BUFSIZE=500000;
++-char buffer[10000];
++-int read_from_stdin = 1;
++-
++-FILE* stdout_id;
++-FILE* stdin_id;
++-void init_redestration()
++-{
++-    //read_from_stdin = 1;
++-	oldstdin = dup(0);
++-    oldstdout = dup(1);
++-    oldstderr = dup(2);
++-	pipe( inpipe );
++-    pipe( outpipe );
++-    pipe( errpipe );
++-	dup2( inpipe[0], 0);
++-    dup2( outpipe[1], 1 );
++-    dup2( errpipe[1], 2 );
++-    close(inpipe[0]);
++-    close(outpipe[1]);
++-    close(errpipe[1]);
++ }
++ 
++-void destroy_redestration()
++-{
++-    //read_from_stdin = 1;
+++void destroy_redestration() {
++ }
++ 
++-char* exec_command(char* cmd)
++-{
++-	int count = 0;
++-    count = write( inpipe[1] , cmd, 10000);
+++char* exec_command(char* cmd) {
+++    if(write(parent, cmd, strlen(cmd)) < 0) {
+++        perror("write error!");
+++        return NULL;
+++    }
+++
++     memset(buffer, 0, sizeof(buffer));
++-    count = read( outpipe[0] , buffer, 10000 );
+++    if(read(parent, buffer, sizeof(buffer)) < 0) {
+++        perror("read error!");
+++        return NULL;
+++    }
++     return buffer;
++ }
++ 
++diff --git a/tsh_if.h b/tsh_if.h
++index 0883e4b..7aa5aab 100644
++--- a/tsh_if.h
+++++ b/tsh_if.h
++@@ -7,9 +7,8 @@
++ #ifndef TSH_IF_H
++ #define TSH_IF_H
++ 
++-
++-
++ void init_redestration();
+++void destroy_redestration();
++ char* exec_command(char* cmd);
++ 
++ #endif
++=====================================================
++commit 53cfb3b35c17b89f226ff8d48a5d02405e7ef4c0
++Author: durd07 <durd07@gmial.com>
++Date:   Thu Oct 31 23:27:33 2013 +0800
++
++    add new files
++
+ =====================================================
+ commit 5ed537d4cb5a084b6930a7ab0f48ffe98efc8ec3
+ Author: durd07 <durd07@gmial.com>
+diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
+index fdd7761..c7ade15 100644
+--- a/open_command_line_window_dialog_slots.cpp
++++ b/open_command_line_window_dialog_slots.cpp
+@@ -1,5 +1,5 @@
+ #include "open_command_line_window_dialog.h"
+-#include "ui_cli.h"
++//#include "ui_cli.h"
+ /*
+ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
+     this->show();
+diff --git a/sim-qt.pro b/sim-qt.pro
+index 5742f13..93f8b79 100644
+--- a/sim-qt.pro
++++ b/sim-qt.pro
+@@ -26,7 +26,7 @@ SOURCES += main.cpp\
+ 	qconsole.cpp \
+ 	qsim_console.cpp \
+ 	main_window_tool_slots.cpp \
+-	tsh_if.cpp
++    tsh_if.c
+ 
+ HEADERS += main_window.h\
+ 	sim_application.h\
+diff --git a/tsh_if.c b/tsh_if.c
+index 0aeec7a..0d6d966 100644
+--- a/tsh_if.c
++++ b/tsh_if.c
+@@ -4,66 +4,31 @@
+  **  E-mail      : xhyz008@163.com
+  **  Created Time: Mon Oct 28 15:09:40 2013
+  *******************************************************************************/
+-#include <stdlib.h>
+-#include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
+-#include <QFile>
+-#include <iostream>
+-#include <QTextStream>
+ 
+-using namespace std;
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
++extern int parent;
+ 
+-#include "tsh_if.h"
++static char buffer[10000];
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-int oldstdin;
+-int oldstdout;
+-int oldstderr;
+-int inpipe[2];
+-int outpipe[2];
+-int errpipe[2];
++void init_redestration() {
+ 
+-const int BUFSIZE=500000;
+-char buffer[10000];
+-int read_from_stdin = 1;
+-
+-FILE* stdout_id;
+-FILE* stdin_id;
+-void init_redestration()
+-{
+-    //read_from_stdin = 1;
+-	oldstdin = dup(0);
+-    oldstdout = dup(1);
+-    oldstderr = dup(2);
+-	pipe( inpipe );
+-    pipe( outpipe );
+-    pipe( errpipe );
+-	dup2( inpipe[0], 0);
+-    dup2( outpipe[1], 1 );
+-    dup2( errpipe[1], 2 );
+-    close(inpipe[0]);
+-    close(outpipe[1]);
+-    close(errpipe[1]);
+ }
+ 
+-void destroy_redestration()
+-{
+-    //read_from_stdin = 1;
++void destroy_redestration() {
+ }
+ 
+-char* exec_command(char* cmd)
+-{
+-	int count = 0;
+-    count = write( inpipe[1] , cmd, 10000);
++char* exec_command(char* cmd) {
++    if(write(parent, cmd, strlen(cmd)) < 0) {
++        perror("write error!");
++        return NULL;
++    }
++
+     memset(buffer, 0, sizeof(buffer));
+-    count = read( outpipe[0] , buffer, 10000 );
++    if(read(parent, buffer, sizeof(buffer)) < 0) {
++        perror("read error!");
++        return NULL;
++    }
+     return buffer;
+ }
+ 
+diff --git a/tsh_if.h b/tsh_if.h
+index 0883e4b..7aa5aab 100644
+--- a/tsh_if.h
++++ b/tsh_if.h
+@@ -7,9 +7,8 @@
+ #ifndef TSH_IF_H
+ #define TSH_IF_H
+ 
+-
+-
+ void init_redestration();
++void destroy_redestration();
+ char* exec_command(char* cmd);
+ 
+ #endif
+=====================================================
+commit 53cfb3b35c17b89f226ff8d48a5d02405e7ef4c0
+Author: durd07 <durd07@gmial.com>
+Date:   Thu Oct 31 23:27:33 2013 +0800
+
+    add new files
+
+diff --git a/ChangeLog b/ChangeLog
+index 0b84325..eafceb0 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,134 @@
++diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
++index fdd7761..c7ade15 100644
++--- a/open_command_line_window_dialog_slots.cpp
+++++ b/open_command_line_window_dialog_slots.cpp
++@@ -1,5 +1,5 @@
++ #include "open_command_line_window_dialog.h"
++-#include "ui_cli.h"
+++//#include "ui_cli.h"
++ /*
++ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
++     this->show();
++diff --git a/sim-qt.pro b/sim-qt.pro
++index 5742f13..93f8b79 100644
++--- a/sim-qt.pro
+++++ b/sim-qt.pro
++@@ -26,7 +26,7 @@ SOURCES += main.cpp\
++ 	qconsole.cpp \
++ 	qsim_console.cpp \
++ 	main_window_tool_slots.cpp \
++-	tsh_if.cpp
+++    tsh_if.c
++ 
++ HEADERS += main_window.h\
++ 	sim_application.h\
++diff --git a/tsh_if.c b/tsh_if.c
++index 0aeec7a..0d6d966 100644
++--- a/tsh_if.c
+++++ b/tsh_if.c
++@@ -4,66 +4,31 @@
++  **  E-mail      : xhyz008@163.com
++  **  Created Time: Mon Oct 28 15:09:40 2013
++  *******************************************************************************/
++-#include <stdlib.h>
++-#include <stdio.h>
++ #include <string.h>
++ #include <unistd.h>
++-#include <QFile>
++-#include <iostream>
++-#include <QTextStream>
++ 
++-using namespace std;
++-#ifdef __cplusplus
++-extern "C" {
++-#endif
+++extern int parent;
++ 
++-#include "tsh_if.h"
+++static char buffer[10000];
++ 
++-#ifdef __cplusplus
++-}
++-#endif
++-
++-int oldstdin;
++-int oldstdout;
++-int oldstderr;
++-int inpipe[2];
++-int outpipe[2];
++-int errpipe[2];
+++void init_redestration() {
++ 
++-const int BUFSIZE=500000;
++-char buffer[10000];
++-int read_from_stdin = 1;
++-
++-FILE* stdout_id;
++-FILE* stdin_id;
++-void init_redestration()
++-{
++-    //read_from_stdin = 1;
++-	oldstdin = dup(0);
++-    oldstdout = dup(1);
++-    oldstderr = dup(2);
++-	pipe( inpipe );
++-    pipe( outpipe );
++-    pipe( errpipe );
++-	dup2( inpipe[0], 0);
++-    dup2( outpipe[1], 1 );
++-    dup2( errpipe[1], 2 );
++-    close(inpipe[0]);
++-    close(outpipe[1]);
++-    close(errpipe[1]);
++ }
++ 
++-void destroy_redestration()
++-{
++-    //read_from_stdin = 1;
+++void destroy_redestration() {
++ }
++ 
++-char* exec_command(char* cmd)
++-{
++-	int count = 0;
++-    count = write( inpipe[1] , cmd, 10000);
+++char* exec_command(char* cmd) {
+++    if(write(parent, cmd, strlen(cmd)) < 0) {
+++        perror("write error!");
+++        return NULL;
+++    }
+++
++     memset(buffer, 0, sizeof(buffer));
++-    count = read( outpipe[0] , buffer, 10000 );
+++    if(read(parent, buffer, sizeof(buffer)) < 0) {
+++        perror("read error!");
+++        return NULL;
+++    }
++     return buffer;
++ }
++ 
++diff --git a/tsh_if.h b/tsh_if.h
++index 0883e4b..7aa5aab 100644
++--- a/tsh_if.h
+++++ b/tsh_if.h
++@@ -7,9 +7,8 @@
++ #ifndef TSH_IF_H
++ #define TSH_IF_H
++ 
++-
++-
++ void init_redestration();
+++void destroy_redestration();
++ char* exec_command(char* cmd);
++ 
++ #endif
++=====================================================
++commit 53cfb3b35c17b89f226ff8d48a5d02405e7ef4c0
++Author: durd07 <durd07@gmial.com>
++Date:   Thu Oct 31 23:27:33 2013 +0800
++
++    add new files
++
+ =====================================================
+ commit 5ed537d4cb5a084b6930a7ab0f48ffe98efc8ec3
+ Author: durd07 <durd07@gmial.com>
+diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
+index fdd7761..c7ade15 100644
+--- a/open_command_line_window_dialog_slots.cpp
++++ b/open_command_line_window_dialog_slots.cpp
+@@ -1,5 +1,5 @@
+ #include "open_command_line_window_dialog.h"
+-#include "ui_cli.h"
++//#include "ui_cli.h"
+ /*
+ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
+     this->show();
+diff --git a/sim-qt.pro b/sim-qt.pro
+index 5742f13..93f8b79 100644
+--- a/sim-qt.pro
++++ b/sim-qt.pro
+@@ -26,7 +26,7 @@ SOURCES += main.cpp\
+ 	qconsole.cpp \
+ 	qsim_console.cpp \
+ 	main_window_tool_slots.cpp \
+-	tsh_if.cpp
++    tsh_if.c
+ 
+ HEADERS += main_window.h\
+ 	sim_application.h\
+diff --git a/tsh_if.c b/tsh_if.c
+index 0aeec7a..0d6d966 100644
+--- a/tsh_if.c
++++ b/tsh_if.c
+@@ -4,66 +4,31 @@
+  **  E-mail      : xhyz008@163.com
+  **  Created Time: Mon Oct 28 15:09:40 2013
+  *******************************************************************************/
+-#include <stdlib.h>
+-#include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
+-#include <QFile>
+-#include <iostream>
+-#include <QTextStream>
+ 
+-using namespace std;
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
++extern int parent;
+ 
+-#include "tsh_if.h"
++static char buffer[10000];
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-int oldstdin;
+-int oldstdout;
+-int oldstderr;
+-int inpipe[2];
+-int outpipe[2];
+-int errpipe[2];
++void init_redestration() {
+ 
+-const int BUFSIZE=500000;
+-char buffer[10000];
+-int read_from_stdin = 1;
+-
+-FILE* stdout_id;
+-FILE* stdin_id;
+-void init_redestration()
+-{
+-    //read_from_stdin = 1;
+-	oldstdin = dup(0);
+-    oldstdout = dup(1);
+-    oldstderr = dup(2);
+-	pipe( inpipe );
+-    pipe( outpipe );
+-    pipe( errpipe );
+-	dup2( inpipe[0], 0);
+-    dup2( outpipe[1], 1 );
+-    dup2( errpipe[1], 2 );
+-    close(inpipe[0]);
+-    close(outpipe[1]);
+-    close(errpipe[1]);
+ }
+ 
+-void destroy_redestration()
+-{
+-    //read_from_stdin = 1;
++void destroy_redestration() {
+ }
+ 
+-char* exec_command(char* cmd)
+-{
+-	int count = 0;
+-    count = write( inpipe[1] , cmd, 10000);
++char* exec_command(char* cmd) {
++    if(write(parent, cmd, strlen(cmd)) < 0) {
++        perror("write error!");
++        return NULL;
++    }
++
+     memset(buffer, 0, sizeof(buffer));
+-    count = read( outpipe[0] , buffer, 10000 );
++    if(read(parent, buffer, sizeof(buffer)) < 0) {
++        perror("read error!");
++        return NULL;
++    }
+     return buffer;
+ }
+ 
+diff --git a/tsh_if.h b/tsh_if.h
+index 0883e4b..7aa5aab 100644
+--- a/tsh_if.h
++++ b/tsh_if.h
+@@ -7,9 +7,8 @@
+ #ifndef TSH_IF_H
+ #define TSH_IF_H
+ 
+-
+-
+ void init_redestration();
++void destroy_redestration();
+ char* exec_command(char* cmd);
+ 
+ #endif
+=====================================================
+commit 53cfb3b35c17b89f226ff8d48a5d02405e7ef4c0
+Author: durd07 <durd07@gmial.com>
+Date:   Thu Oct 31 23:27:33 2013 +0800
+
+    add new files
+
+diff --git a/open_command_line_window_dialog_slots.cpp b/open_command_line_window_dialog_slots.cpp
+index fdd7761..c7ade15 100644
+--- a/open_command_line_window_dialog_slots.cpp
++++ b/open_command_line_window_dialog_slots.cpp
+@@ -1,5 +1,5 @@
+ #include "open_command_line_window_dialog.h"
+-#include "ui_cli.h"
++//#include "ui_cli.h"
+ /*
+ void OpenCommandLineWindowDialog::openCommandLineWindow(void) {
+     this->show();
+diff --git a/sim-qt.pro b/sim-qt.pro
+index 5742f13..93f8b79 100644
+--- a/sim-qt.pro
++++ b/sim-qt.pro
+@@ -26,7 +26,7 @@ SOURCES += main.cpp\
+ 	qconsole.cpp \
+ 	qsim_console.cpp \
+ 	main_window_tool_slots.cpp \
+-	tsh_if.cpp
++    tsh_if.c
+ 
+ HEADERS += main_window.h\
+ 	sim_application.h\
+diff --git a/tsh_if.c b/tsh_if.c
+index 0aeec7a..0d6d966 100644
+--- a/tsh_if.c
++++ b/tsh_if.c
+@@ -4,66 +4,31 @@
+  **  E-mail      : xhyz008@163.com
+  **  Created Time: Mon Oct 28 15:09:40 2013
+  *******************************************************************************/
+-#include <stdlib.h>
+-#include <stdio.h>
+ #include <string.h>
+ #include <unistd.h>
+-#include <QFile>
+-#include <iostream>
+-#include <QTextStream>
+ 
+-using namespace std;
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
++extern int parent;
+ 
+-#include "tsh_if.h"
++static char buffer[10000];
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-int oldstdin;
+-int oldstdout;
+-int oldstderr;
+-int inpipe[2];
+-int outpipe[2];
+-int errpipe[2];
++void init_redestration() {
+ 
+-const int BUFSIZE=500000;
+-char buffer[10000];
+-int read_from_stdin = 1;
+-
+-FILE* stdout_id;
+-FILE* stdin_id;
+-void init_redestration()
+-{
+-    //read_from_stdin = 1;
+-	oldstdin = dup(0);
+-    oldstdout = dup(1);
+-    oldstderr = dup(2);
+-	pipe( inpipe );
+-    pipe( outpipe );
+-    pipe( errpipe );
+-	dup2( inpipe[0], 0);
+-    dup2( outpipe[1], 1 );
+-    dup2( errpipe[1], 2 );
+-    close(inpipe[0]);
+-    close(outpipe[1]);
+-    close(errpipe[1]);
+ }
+ 
+-void destroy_redestration()
+-{
+-    //read_from_stdin = 1;
++void destroy_redestration() {
+ }
+ 
+-char* exec_command(char* cmd)
+-{
+-	int count = 0;
+-    count = write( inpipe[1] , cmd, 10000);
++char* exec_command(char* cmd) {
++    if(write(parent, cmd, strlen(cmd)) < 0) {
++        perror("write error!");
++        return NULL;
++    }
++
+     memset(buffer, 0, sizeof(buffer));
+-    count = read( outpipe[0] , buffer, 10000 );
++    if(read(parent, buffer, sizeof(buffer)) < 0) {
++        perror("read error!");
++        return NULL;
++    }
+     return buffer;
+ }
+ 
+diff --git a/tsh_if.h b/tsh_if.h
+index 0883e4b..7aa5aab 100644
+--- a/tsh_if.h
++++ b/tsh_if.h
+@@ -7,9 +7,8 @@
+ #ifndef TSH_IF_H
+ #define TSH_IF_H
+ 
+-
+-
+ void init_redestration();
++void destroy_redestration();
+ char* exec_command(char* cmd);
+ 
+ #endif
+=====================================================
+commit 53cfb3b35c17b89f226ff8d48a5d02405e7ef4c0
+Author: durd07 <durd07@gmial.com>
+Date:   Thu Oct 31 23:27:33 2013 +0800
+
+    add new files
+
 =====================================================
 commit 5ed537d4cb5a084b6930a7ab0f48ffe98efc8ec3
 Author: durd07 <durd07@gmial.com>

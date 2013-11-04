@@ -7,9 +7,8 @@
 #ifndef TSH_IF_H
 #define TSH_IF_H
 
-
-
 void init_redestration();
+void destroy_redestration();
 char* exec_command(char* cmd);
 
 #endif
