@@ -1,4 +1,24 @@
 diff --git a/main.cpp b/main.cpp
+index 9ddf12b..106c2ae 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -13,7 +13,7 @@ int simqt_main(int argc, char *argv[])
+     main_w = new(MainWindow);
+     main_w->show();
+ 
+-    return simApp.exec();
++    return simApp->exec();
+ }
+ 
+ #ifdef __cplusplus
+=====================================================
+commit bdd9ab70688ae762587d0e17dca3584d187a83e6
+Author: durd07 <durd07@gmial.com>
+Date:   Wed Nov 6 00:18:45 2013 +0800
+
+    polished
+
+diff --git a/main.cpp b/main.cpp
 index 6b1ac0e..9ddf12b 100644
 --- a/main.cpp
 +++ b/main.cpp
