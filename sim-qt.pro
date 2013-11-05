@@ -26,7 +26,7 @@ SOURCES += main.cpp\
 	qconsole.cpp \
 	qsim_console.cpp \
 	main_window_tool_slots.cpp \
-    tsh_if.c
+        tsh_if.c
 
 HEADERS += main_window.h\
 	sim_application.h\

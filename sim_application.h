@@ -10,7 +10,6 @@ public:
 
 private:
 
-
 signals:
     void newSessionFromScript(QString &ss_path);
 

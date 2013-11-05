@@ -13,7 +13,7 @@ int simqt_main(int argc, char *argv[])
     main_w = new(MainWindow);
     main_w->show();
 
-    return sim_app.exec();
+    return simApp.exec();
 }
 
 #ifdef __cplusplus

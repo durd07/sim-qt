@@ -41,10 +41,6 @@ extern "C" {
 #endif
 #include <QDebug>
 
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-
 QString resultString;
 
 void QSimConsole::printHistory()

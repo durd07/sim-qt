@@ -1,4 +1,71 @@
 diff --git a/main.cpp b/main.cpp
+index 6b1ac0e..9ddf12b 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -13,7 +13,7 @@ int simqt_main(int argc, char *argv[])
+     main_w = new(MainWindow);
+     main_w->show();
+ 
+-    return sim_app.exec();
++    return simApp.exec();
+ }
+ 
+ #ifdef __cplusplus
+diff --git a/qsim_console.cpp b/qsim_console.cpp
+index 0bad61e..acab29a 100644
+--- a/qsim_console.cpp
++++ b/qsim_console.cpp
+@@ -41,10 +41,6 @@ extern "C" {
+ #endif
+ #include <QDebug>
+ 
+-#include <string.h>
+-#include <unistd.h>
+-#include <fcntl.h>
+-
+ QString resultString;
+ 
+ void QSimConsole::printHistory()
+diff --git a/sim-qt.pro b/sim-qt.pro
+index 93f8b79..3967b64 100644
+--- a/sim-qt.pro
++++ b/sim-qt.pro
+@@ -26,7 +26,7 @@ SOURCES += main.cpp\
+ 	qconsole.cpp \
+ 	qsim_console.cpp \
+ 	main_window_tool_slots.cpp \
+-    tsh_if.c
++        tsh_if.c
+ 
+ HEADERS += main_window.h\
+ 	sim_application.h\
+diff --git a/sim_application.h b/sim_application.h
+index 82a6215..48ae12a 100644
+--- a/sim_application.h
++++ b/sim_application.h
+@@ -10,7 +10,6 @@ public:
+ 
+ private:
+ 
+-
+ signals:
+     void newSessionFromScript(QString &ss_path);
+ 
+=====================================================
+commit 3bd31c7b8d01103e7f22f2f5991743a7af2ca67d
+Author: durd <durd@bogon.localdomain>
+Date:   Tue Nov 5 17:25:57 2013 +0800
+
+    complete the core develop of commandline window
+    
+    1. polished the tsh api for call;
+    2. commandline window can execute command normally "cd" is work OK;
+    
+    NOT work
+    1. can't recogisze '\r' just append next line;
+    2. can't distinwish color;
+
+diff --git a/main.cpp b/main.cpp
 index 106c2ae..6b1ac0e 100644
 --- a/main.cpp
 +++ b/main.cpp
