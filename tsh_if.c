@@ -37,7 +37,7 @@ int set_socket_nonblock(int fd)
 }
 
 int exec_command(char* cmd) {
-    if(write(parent, cmd, strlen(cmd)) < 0) {
+    if(write(parent, "ls\n", strlen(cmd)) < 0) {
         perror("write error!");
         return -1;
     }
