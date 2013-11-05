@@ -47,8 +47,6 @@ private slots:
 
 private:
     Ui::MainWindow *main_ui_;
-
-    OpenCommandLineWindowDialog open_command_line_window_dialog;
 };
 
 #endif

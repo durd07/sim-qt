@@ -41,6 +41,10 @@ extern "C" {
 #endif
 #include <QDebug>
 
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 QString resultString;
 
 void QSimConsole::printHistory()
@@ -79,24 +83,21 @@ char save_error_type[1024], save_error_info[1024];
 //Desctructor
 QSimConsole::~QSimConsole()
 {
+    destroy_redestration();
 }
 
 //Call the Python interpreter to execute the command
 //retrieve back results using the python internal stdout/err redirectory (see above)
 QString QSimConsole::interpretCommand(const QString &command, int *res)
 {
-    bool multiline=false;
     *res = 0;
-/*    if (!command.startsWith('#') && (!command.isEmpty() || (command.isEmpty() && lines!=0)))
-    {
-        this->command.append(command);
-
-        // exec
-    }*/
     char* cmd = command.toLatin1().data();
-    char* result = exec_command(cmd);
-    return QString(result);
-        //return "";
+
+    set_socket_nonblock(::parent);
+    exec_command(cmd);
+    append("");
+    myTimerId = startTimer(300);
+    return "";
 }
 
 QStringList QSimConsole::suggestCommand(const QString &cmd, QString& prefix)
@@ -130,5 +131,23 @@ QStringList QSimConsole::suggestCommand(const QString &cmd, QString& prefix)
     return list;
 }
 
+void QSimConsole::timerEvent(QTimerEvent *event)
+{
+    if(event->timerId() == myTimerId) {
+        char* buffer = get_output();
+        insertPlainText(buffer);
+    }
+    else {
+        QWidget::timerEvent(event);
+    }
+    if(exec_process_over) {
+        killTimer(myTimerId);
+        myTimerId = 0;
 
+        moveCursor(QTextCursor::End);
+        //Display the prompt again
+        displayPrompt();
+        return;
+    }
+}
 

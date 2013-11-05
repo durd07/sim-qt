@@ -633,9 +633,10 @@ bool QConsole::execCommand(const QString &command, bool writeCommand,
         }
         //execute the command and get back its text result and its return value
         int res = 0;
+
         QString strRes = interpretCommand(modifiedCommand, &res);
         //According to the return value, display the result either in red or in blue
-        if (res == 0)
+/*        if (res == 0)
                 setTextColor(outColor_);
         else
                 setTextColor(errColor_);
@@ -649,7 +650,7 @@ bool QConsole::execCommand(const QString &command, bool writeCommand,
         moveCursor(QTextCursor::End);
         //Display the prompt again
         if (showPrompt)
-            displayPrompt();
+            displayPrompt();*/
         return !res;
 }
 

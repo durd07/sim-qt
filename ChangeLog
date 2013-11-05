@@ -1,3 +1,306 @@
+diff --git a/main.cpp b/main.cpp
+index 106c2ae..6b1ac0e 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -13,7 +13,7 @@ int simqt_main(int argc, char *argv[])
+     main_w = new(MainWindow);
+     main_w->show();
+ 
+-    return simApp->exec();
++    return sim_app.exec();
+ }
+ 
+ #ifdef __cplusplus
+diff --git a/main_window.cpp b/main_window.cpp
+index b41b627..f669fa0 100644
+--- a/main_window.cpp
++++ b/main_window.cpp
+@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
+ 
+     //delete object when close() is called
+     setAttribute(Qt::WA_DeleteOnClose);
++    setAttribute(Qt::WA_QuitOnClose);
+ #if 1                                   // fix me
+     QLabel *x = new QLabel("111          1");
+     x->setAlignment(Qt::AlignCenter);
+diff --git a/main_window.h b/main_window.h
+index 8b05a05..6afa320 100644
+--- a/main_window.h
++++ b/main_window.h
+@@ -47,8 +47,6 @@ private slots:
+ 
+ private:
+     Ui::MainWindow *main_ui_;
+-
+-    OpenCommandLineWindowDialog open_command_line_window_dialog;
+ };
+ 
+ #endif
+diff --git a/main_window_tool_slots.cpp b/main_window_tool_slots.cpp
+index 4dbe438..5f316cb 100644
+--- a/main_window_tool_slots.cpp
++++ b/main_window_tool_slots.cpp
+@@ -6,14 +6,5 @@
+ void MainWindow::openCommandLineWindow(void)
+ {
+     OpenCommandLineWindowDialog *command_line_window = new OpenCommandLineWindowDialog;
+- //   command_line_window->setMinimumSize(640, 480);
+-    //Instantiate and set the focus to the QPyConsole
+- //   QSimConsole *console = QSimConsole::getInstance(command_line_window);
+- //   command_line_window->setFocusProxy((QWidget*)console);
+-  //  command_line_window->setCentralWidget((QWidget*)console);
+     command_line_window->show();
+-
+-
+-    //QSimConsole::getInstance(MainWindow, tr("Welcome to simics!"));
+-
+ }
+diff --git a/open_command_line_window_dialog.cpp b/open_command_line_window_dialog.cpp
+index 52bd36b..1ce801d 100644
+--- a/open_command_line_window_dialog.cpp
++++ b/open_command_line_window_dialog.cpp
+@@ -8,11 +8,11 @@ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+     this->setFocusProxy((QWidget*)console);
+     this->setMinimumSize(640, 480);
+     this->setWindowTitle(tr("Simics Command Line"));
++    this->setAttribute(Qt::WA_QuitOnClose, false);
+ 
+     layout = new QVBoxLayout;
+     layout->addWidget(console);
+     this->setLayout(layout);
+-
+ }
+ 
+ OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
+diff --git a/qconsole.cpp b/qconsole.cpp
+index 4327063..1e0313c 100644
+--- a/qconsole.cpp
++++ b/qconsole.cpp
+@@ -633,9 +633,10 @@ bool QConsole::execCommand(const QString &command, bool writeCommand,
+         }
+         //execute the command and get back its text result and its return value
+         int res = 0;
++
+         QString strRes = interpretCommand(modifiedCommand, &res);
+         //According to the return value, display the result either in red or in blue
+-        if (res == 0)
++/*        if (res == 0)
+                 setTextColor(outColor_);
+         else
+                 setTextColor(errColor_);
+@@ -649,7 +650,7 @@ bool QConsole::execCommand(const QString &command, bool writeCommand,
+         moveCursor(QTextCursor::End);
+         //Display the prompt again
+         if (showPrompt)
+-            displayPrompt();
++            displayPrompt();*/
+         return !res;
+ }
+ 
+diff --git a/qsim_console.cpp b/qsim_console.cpp
+index b2fa4d4..0bad61e 100644
+--- a/qsim_console.cpp
++++ b/qsim_console.cpp
+@@ -41,6 +41,10 @@ extern "C" {
+ #endif
+ #include <QDebug>
+ 
++#include <string.h>
++#include <unistd.h>
++#include <fcntl.h>
++
+ QString resultString;
+ 
+ void QSimConsole::printHistory()
+@@ -79,24 +83,21 @@ char save_error_type[1024], save_error_info[1024];
+ //Desctructor
+ QSimConsole::~QSimConsole()
+ {
++    destroy_redestration();
+ }
+ 
+ //Call the Python interpreter to execute the command
+ //retrieve back results using the python internal stdout/err redirectory (see above)
+ QString QSimConsole::interpretCommand(const QString &command, int *res)
+ {
+-    bool multiline=false;
+     *res = 0;
+-/*    if (!command.startsWith('#') && (!command.isEmpty() || (command.isEmpty() && lines!=0)))
+-    {
+-        this->command.append(command);
+-
+-        // exec
+-    }*/
+     char* cmd = command.toLatin1().data();
+-    char* result = exec_command(cmd);
+-    return QString(result);
+-        //return "";
++
++    set_socket_nonblock(::parent);
++    exec_command(cmd);
++    append("");
++    myTimerId = startTimer(300);
++    return "";
+ }
+ 
+ QStringList QSimConsole::suggestCommand(const QString &cmd, QString& prefix)
+@@ -130,5 +131,23 @@ QStringList QSimConsole::suggestCommand(const QString &cmd, QString& prefix)
+     return list;
+ }
+ 
+-
++void QSimConsole::timerEvent(QTimerEvent *event)
++{
++    if(event->timerId() == myTimerId) {
++        char* buffer = get_output();
++        insertPlainText(buffer);
++    }
++    else {
++        QWidget::timerEvent(event);
++    }
++    if(exec_process_over) {
++        killTimer(myTimerId);
++        myTimerId = 0;
++
++        moveCursor(QTextCursor::End);
++        //Display the prompt again
++        displayPrompt();
++        return;
++    }
++}
+ 
+diff --git a/qsim_console.h b/qsim_console.h
+index c1181b7..af165c4 100644
+--- a/qsim_console.h
++++ b/qsim_console.h
+@@ -54,7 +54,7 @@ protected:
+ 
+     void setNormalPrompt(bool display) { setPrompt("simics# ", display); }
+     void setMultilinePrompt(bool display) { setPrompt("...", display); }
+-
++    void timerEvent(QTimerEvent *event);
+ private:
+ 
+     //The instance
+@@ -66,6 +66,8 @@ private:
+ 
+     // number of lines associated with current command
+     int lines;
++
++    int myTimerId;
+ };
+ 
+ #endif
+diff --git a/sim_application.h b/sim_application.h
+index 48ae12a..82a6215 100644
+--- a/sim_application.h
++++ b/sim_application.h
+@@ -10,6 +10,7 @@ public:
+ 
+ private:
+ 
++
+ signals:
+     void newSessionFromScript(QString &ss_path);
+ 
+diff --git a/tsh_if.c b/tsh_if.c
+index 0d6d966..8f60b49 100644
+--- a/tsh_if.c
++++ b/tsh_if.c
+@@ -4,31 +4,53 @@
+  **  E-mail      : xhyz008@163.com
+  **  Created Time: Mon Oct 28 15:09:40 2013
+  *******************************************************************************/
++#include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <fcntl.h>
++#include "tsh_if.h"
+ 
+-extern int parent;
++static char* output_buffer = NULL;
+ 
+-static char buffer[10000];
++int init_redestration() {
++    output_buffer = (char*)malloc(sizeof(char) * MAX_BUFFERSIZE);
++    if(output_buffer == NULL)
++    {
++        return -1;
++    }
+ 
+-void init_redestration() {
++    return 0;
++}
+ 
++int destroy_redestration() {
++    free(output_buffer);
++    return 0;
+ }
+ 
+-void destroy_redestration() {
++int set_socket_nonblock(int fd)
++{
++    int flag = fcntl(fd,F_GETFL,0);
++    if(-1 == fcntl(fd, F_SETFL, flag | O_NONBLOCK)) {
++        return -1;
++    }
++    return 0;
+ }
+ 
+-char* exec_command(char* cmd) {
++int exec_command(char* cmd) {
+     if(write(parent, cmd, strlen(cmd)) < 0) {
+         perror("write error!");
+-        return NULL;
++        return -1;
+     }
++    return 0;
++}
+ 
+-    memset(buffer, 0, sizeof(buffer));
+-    if(read(parent, buffer, sizeof(buffer)) < 0) {
+-        perror("read error!");
++char* get_output() {
++    memset(output_buffer, 0, sizeof(char) * MAX_BUFFERSIZE);
++    if(read(parent, output_buffer, sizeof(char) * MAX_BUFFERSIZE) < 0)
++    {
++        perror("read");
+         return NULL;
+     }
+-    return buffer;
++    return output_buffer;
+ }
+ 
+diff --git a/tsh_if.h b/tsh_if.h
+index 7aa5aab..b28c132 100644
+--- a/tsh_if.h
++++ b/tsh_if.h
+@@ -7,9 +7,15 @@
+ #ifndef TSH_IF_H
+ #define TSH_IF_H
+ 
+-void init_redestration();
+-void destroy_redestration();
+-char* exec_command(char* cmd);
++#define MAX_BUFFERSIZE 4096
++extern int exec_process_over;
++extern int parent;
++
++int init_redestration();
++int destroy_redestration();
++int set_socket_nonblock(int fd);
++int exec_command(char* cmd);
++char* get_output();
+ 
+ #endif
+ 
+=====================================================
+commit 110bdff6c06466a6482314213793c41a85666028
+Author: durd <durd@bogon.localdomain>
+Date:   Mon Nov 4 17:41:57 2013 +0800
+
+    modify the exec_command for work OK.
+
 diff --git a/ChangeLog b/ChangeLog
 index 0b84325..7942b04 100644
 --- a/ChangeLog

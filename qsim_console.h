@@ -54,7 +54,7 @@ protected:
 
     void setNormalPrompt(bool display) { setPrompt("simics# ", display); }
     void setMultilinePrompt(bool display) { setPrompt("...", display); }
-
+    void timerEvent(QTimerEvent *event);
 private:
 
     //The instance
@@ -66,6 +66,8 @@ private:
 
     // number of lines associated with current command
     int lines;
+
+    int myTimerId;
 };
 
 #endif

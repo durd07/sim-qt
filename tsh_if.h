@@ -7,9 +7,15 @@
 #ifndef TSH_IF_H
 #define TSH_IF_H
 
-void init_redestration();
-void destroy_redestration();
-char* exec_command(char* cmd);
+#define MAX_BUFFERSIZE 4096
+extern int exec_process_over;
+extern int parent;
+
+int init_redestration();
+int destroy_redestration();
+int set_socket_nonblock(int fd);
+int exec_command(char* cmd);
+char* get_output();
 
 #endif
 

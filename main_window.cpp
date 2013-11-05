@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //delete object when close() is called
     setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_QuitOnClose);
 #if 1                                   // fix me
     QLabel *x = new QLabel("111          1");
     x->setAlignment(Qt::AlignCenter);

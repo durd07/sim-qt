@@ -8,11 +8,11 @@ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
     this->setFocusProxy((QWidget*)console);
     this->setMinimumSize(640, 480);
     this->setWindowTitle(tr("Simics Command Line"));
+    this->setAttribute(Qt::WA_QuitOnClose, false);
 
     layout = new QVBoxLayout;
     layout->addWidget(console);
     this->setLayout(layout);
-
 }
 
 OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {

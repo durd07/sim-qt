@@ -4,31 +4,53 @@
  **  E-mail      : xhyz008@163.com
  **  Created Time: Mon Oct 28 15:09:40 2013
  *******************************************************************************/
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include "tsh_if.h"
 
-extern int parent;
+static char* output_buffer = NULL;
 
-static char buffer[10000];
+int init_redestration() {
+    output_buffer = (char*)malloc(sizeof(char) * MAX_BUFFERSIZE);
+    if(output_buffer == NULL)
+    {
+        return -1;
+    }
 
-void init_redestration() {
-
+    return 0;
 }
 
-void destroy_redestration() {
+int destroy_redestration() {
+    free(output_buffer);
+    return 0;
 }
 
-char* exec_command(char* cmd) {
+int set_socket_nonblock(int fd)
+{
+    int flag = fcntl(fd,F_GETFL,0);
+    if(-1 == fcntl(fd, F_SETFL, flag | O_NONBLOCK)) {
+        return -1;
+    }
+    return 0;
+}
+
+int exec_command(char* cmd) {
     if(write(parent, cmd, strlen(cmd)) < 0) {
         perror("write error!");
-        return NULL;
+        return -1;
     }
+    return 0;
+}
 
-    memset(buffer, 0, sizeof(buffer));
-    if(read(parent, buffer, sizeof(buffer)) < 0) {
-        perror("read error!");
+char* get_output() {
+    memset(output_buffer, 0, sizeof(char) * MAX_BUFFERSIZE);
+    if(read(parent, output_buffer, sizeof(char) * MAX_BUFFERSIZE) < 0)
+    {
+        perror("read");
         return NULL;
     }
-    return buffer;
+    return output_buffer;
 }
 
