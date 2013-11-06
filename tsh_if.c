@@ -14,11 +14,9 @@ static char* output_buffer = NULL;
 
 int init_redestration() {
     output_buffer = (char*)malloc(sizeof(char) * MAX_BUFFERSIZE);
-    if(output_buffer == NULL)
-    {
+    if(output_buffer == NULL) {
         return -1;
     }
-
     return 0;
 }
 
@@ -53,4 +51,3 @@ char* get_output() {
     }
     return output_buffer;
 }
-

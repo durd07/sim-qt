@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 
 OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
-    QWidget(parent){
+    QWidget(parent) {
     QSimConsole *console = QSimConsole::getInstance(this);
     this->setFocusProxy((QWidget*)console);
     this->setMinimumSize(640, 480);

@@ -1,5 +1,6 @@
 #include <QFileDialog>
 #include "main_window.h"
+#include "open_checkpoint_dialog.h"
 
 void MainWindow::newEmptySession(void) {
     MainWindow *new_mainWindow = new(MainWindow);
@@ -13,12 +14,19 @@ void MainWindow::newSessionFromScript(void) {
                                                       ".",
                                                       tr("Script files (*.sim)"));
     if (!scriptName.isEmpty()) {
-
+        // TODO
     }
 }
 void MainWindow::openCheckpoint(void) {
     OpenCheckpointDialog open_checkpoint_dialog;
-    open_checkpoint_dialog.exec();
+
+    if(QDialog::Accepted == open_checkpoint_dialog.exec()) {
+        QString checkpoint_name = open_checkpoint_dialog.GetCheckpointName();
+
+        if (!checkpoint_name.isEmpty()) {
+            // TODO
+        }
+    }
 }
 
 bool MainWindow::saveCheckpoint(void) {
@@ -31,13 +39,20 @@ void MainWindow::appendFromScript(void) {
                                                       ".",
                                                       tr("Script files (*.sim)"));
     if (!scriptName.isEmpty()) {
-
+        // TODO
     }
 }
 
 void MainWindow::appendFromCheckpoint(void) {
     OpenCheckpointDialog open_checkpoint_dialog;
-    open_checkpoint_dialog.exec();
+
+    if(QDialog::Accepted == open_checkpoint_dialog.exec()) {
+        QString checkpoint_name = open_checkpoint_dialog.GetCheckpointName();
+
+        if (!checkpoint_name.isEmpty()) {
+            // TODO
+        }
+    }
 }
 
 bool MainWindow::loadPresistentState(void) {
@@ -83,7 +98,7 @@ void MainWindow::changeWorkspace(void) {
     | QFileDialog::DontResolveSymlinks);
 
     if (!workspace_path.isEmpty()) {
-
+        // TODO
     }
 #endif
 }

@@ -1,4 +1,618 @@
 diff --git a/main.cpp b/main.cpp
+index 106c2ae..5cf30ea 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -1,11 +1,17 @@
+ #include "sim_application.h"
+ #include "main_window.h"
++#include "qconsole.h"
++#define _QT_GUI_LIB
+ 
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
++
++#ifdef _QT_GUI_LIB
+ int simqt_main(int argc, char *argv[])
+-//int main(int argc, char *argv[])
++#else
++int main(int argc, char *argv[])
++#endif
+ {
+     SimApplication sim_app(argc, argv);
+     MainWindow *main_w;
+diff --git a/main_window.cpp b/main_window.cpp
+index f669fa0..2907d44 100644
+--- a/main_window.cpp
++++ b/main_window.cpp
+@@ -2,47 +2,21 @@
+ #include "ui_main_window.h"
+ #include "sim_application.h"
+ #include <QLabel>
+-
+-static MainWindow *gbl_cur_main_window = NULL;
++#include <QHBoxLayout>
+ 
+ MainWindow::MainWindow(QWidget *parent) :
+     QMainWindow(parent),
+     main_ui_(new Ui::MainWindow) {
+-    gbl_cur_main_window = this;
+     main_ui_->setupUi(this);
+ 
+     //delete object when close() is called
+     setAttribute(Qt::WA_DeleteOnClose);
+     setAttribute(Qt::WA_QuitOnClose);
+-#if 1                                   // fix me
+-    QLabel *x = new QLabel("111          1");
+-    x->setAlignment(Qt::AlignCenter);
+-    x->setMinimumSize(x->sizeHint());
+-    x->setFrameShape(QFrame::WinPanel);
+-    x->setFrameShadow(QFrame::Sunken);
+-
+-    QLabel *y = new QLabel("222");
+-    y->setAlignment(Qt::AlignCenter);
+-    y->setMinimumSize(x->sizeHint());
+-    y->setFrameShape(QFrame::WinPanel);
+-    y->setFrameShadow(QFrame::Sunken);
+-
+-    QLabel *z = new QLabel("333");
+-    z->setAlignment(Qt::AlignCenter);
+-    z->setMinimumSize(x->sizeHint());
+-    z->setFrameShape(QFrame::WinPanel);
+-    z->setFrameShadow(QFrame::Sunken);
+ 
+-    main_ui_->statusBar->addWidget(x, 0);
+-    main_ui_->statusBar->addWidget(y, 1);
+-    main_ui_->statusBar->addWidget(z, 2);
++    init_StatusBar();
+ 
+-    x->setText(tr("baby baby"));
+-    y->setText(tr("baby baby"));
+-    z->setText(tr("baby baby"));
+-#endif
+     setFileMenu();
+-
++    setToolsMenu();
+ }
+ 
+ void MainWindow::setFileMenu(void) {
+@@ -63,12 +37,42 @@ void MainWindow::setFileMenu(void) {
+     connect(main_ui_->actionChangeWorkspace, SIGNAL(triggered()),
+             this, SLOT(changeWorkspace()));
+     connect(main_ui_->actionExit, SIGNAL(triggered()),
+-            simApp, SLOT(closeAllWindows()));
++            this, SLOT(close()));
++}
+ 
++void MainWindow::setToolsMenu(void) {
+     connect(main_ui_->actionCommandLineWindow, SIGNAL(triggered()),
+             this, SLOT(openCommandLineWindow()));
++
+ }
+ 
++void MainWindow::init_StatusBar(void) {
++    QLabel *x = new QLabel(" W999 ");
++    x->setAlignment(Qt::AlignCenter);
++    x->setMinimumSize(x->sizeHint());
++    x->setFrameShape(QFrame::WinPanel);
++    x->setFrameShadow(QFrame::Sunken);
++
++    QLabel *y = new QLabel("222");
++    y->setAlignment(Qt::AlignCenter);
++    y->setMinimumSize(y->sizeHint());
++    y->setFrameShape(QFrame::WinPanel);
++    y->setFrameShadow(QFrame::Sunken);
++
++    QLabel *z = new QLabel("333");
++    z->setAlignment(Qt::AlignCenter);
++    z->setMinimumSize(z->sizeHint());
++    z->setFrameShape(QFrame::WinPanel);
++    z->setFrameShadow(QFrame::Sunken);
++
++    main_ui_->statusBar->addWidget(x, 0);
++    main_ui_->statusBar->addWidget(y, 1);
++    main_ui_->statusBar->addWidget(z, 2);
++
++    x->setText(tr("baby baby"));
++    y->setText(tr("baby baby"));
++    z->setText(tr("baby baby"));
++}
+ MainWindow::~MainWindow() {
+     delete main_ui_;
+ }
+diff --git a/main_window.h b/main_window.h
+index 6afa320..d7c5b9a 100644
+--- a/main_window.h
++++ b/main_window.h
+@@ -2,9 +2,6 @@
+ #define MAIN_WINDOW_H
+ 
+ #include <QMainWindow>
+-#include "open_checkpoint_dialog.h"
+-#include "create_workspace_dialog.h"
+-#include "open_command_line_window_dialog.h"
+ 
+ namespace Ui {
+     class MainWindow;
+@@ -22,10 +19,14 @@ private:
+     void setEditMenu(void);
+     void setRunMenu(void);
+     void setDebugMenu(void);
++    void setToolsMenu(void);
+     void setWindowMenu(void);
+     void setHelpMenu(void);
++
++    void init_StatusBar(void);
+ signals:
+ private slots:
++    //File Menu
+     void newEmptySession(void);
+     void newSessionFromScript(void);
+     void openCheckpoint(void);
+@@ -38,14 +39,10 @@ private slots:
+     void createWorkspace(void);
+     void changeWorkspace(void);
+ 
++    //Tool Menu
+     void openCommandLineWindow(void);
+ 
+ private:
+-    void setToolsMenu(void);
+-signals:
+-private slots:
+-
+-private:
+     Ui::MainWindow *main_ui_;
+ };
+ 
+diff --git a/main_window.ui b/main_window.ui
+index 21422aa..de90b84 100644
+--- a/main_window.ui
++++ b/main_window.ui
+@@ -33,7 +33,7 @@
+      <x>0</x>
+      <y>0</y>
+      <width>407</width>
+-     <height>23</height>
++     <height>19</height>
+     </rect>
+    </property>
+    <widget class="QMenu" name="menuFile">
+diff --git a/main_window_file_slots.cpp b/main_window_file_slots.cpp
+index 77413ff..7c9fcea 100644
+--- a/main_window_file_slots.cpp
++++ b/main_window_file_slots.cpp
+@@ -1,5 +1,6 @@
+ #include <QFileDialog>
+ #include "main_window.h"
++#include "open_checkpoint_dialog.h"
+ 
+ void MainWindow::newEmptySession(void) {
+     MainWindow *new_mainWindow = new(MainWindow);
+@@ -13,12 +14,19 @@ void MainWindow::newSessionFromScript(void) {
+                                                       ".",
+                                                       tr("Script files (*.sim)"));
+     if (!scriptName.isEmpty()) {
+-
++        // TODO
+     }
+ }
+ void MainWindow::openCheckpoint(void) {
+     OpenCheckpointDialog open_checkpoint_dialog;
+-    open_checkpoint_dialog.exec();
++
++    if(QDialog::Accepted == open_checkpoint_dialog.exec()) {
++        QString checkpoint_name = open_checkpoint_dialog.GetCheckpointName();
++
++        if (!checkpoint_name.isEmpty()) {
++            // TODO
++        }
++    }
+ }
+ 
+ bool MainWindow::saveCheckpoint(void) {
+@@ -31,13 +39,20 @@ void MainWindow::appendFromScript(void) {
+                                                       ".",
+                                                       tr("Script files (*.sim)"));
+     if (!scriptName.isEmpty()) {
+-
++        // TODO
+     }
+ }
+ 
+ void MainWindow::appendFromCheckpoint(void) {
+     OpenCheckpointDialog open_checkpoint_dialog;
+-    open_checkpoint_dialog.exec();
++
++    if(QDialog::Accepted == open_checkpoint_dialog.exec()) {
++        QString checkpoint_name = open_checkpoint_dialog.GetCheckpointName();
++
++        if (!checkpoint_name.isEmpty()) {
++            // TODO
++        }
++    }
+ }
+ 
+ bool MainWindow::loadPresistentState(void) {
+@@ -83,7 +98,7 @@ void MainWindow::changeWorkspace(void) {
+     | QFileDialog::DontResolveSymlinks);
+ 
+     if (!workspace_path.isEmpty()) {
+-
++        // TODO
+     }
+ #endif
+ }
+diff --git a/open_checkpoint_dialog.cpp b/open_checkpoint_dialog.cpp
+index b0a69a7..92af5ae 100644
+--- a/open_checkpoint_dialog.cpp
++++ b/open_checkpoint_dialog.cpp
+@@ -11,6 +11,8 @@ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
+     open_checkpoint_dialog_ui_(new Ui::OpenCheckpointDialog) {
+     open_checkpoint_dialog_ui_->setupUi(this);
+ 
++    m_checkpoint_name = tr("");
++
+ #ifdef _USE_DIRMODEL
+     FileSysmodel = new QDirModel();
+     FileSysmodel->setSorting(QDir::DirsFirst | QDir::IgnoreCase | QDir::Name);
+@@ -18,7 +20,8 @@ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
+     FileSysmodel = new QFileSystemModel();
+     FileSysmodel->sort(0);
+ #endif
+-    FileSysmodel->setFilter(QDir::AllDirs | QDir::AllEntries | QDir::Drives | QDir::NoDotAndDotDot);
++    FileSysmodel->setFilter(
++                QDir::AllDirs | QDir::AllEntries | QDir::Drives | QDir::NoDotAndDotDot);
+     FileSysmodel->setNameFilters(QStringList(QString("*.xml")));
+ 
+ #ifdef _USE_DIRMODEL
+@@ -31,13 +34,20 @@ OpenCheckpointDialog::OpenCheckpointDialog(QDialog *parent) :
+     initSelectDirectoryComboBox(modelIndex);
+     showFileInfoList(modelIndex);
+ 
+-    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(doubleClicked(QModelIndex )),this,SLOT(slotShowDir(QModelIndex )));
+-    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(clicked(QModelIndex)),this,SLOT(slotOpenEnable(QModelIndex)));
+-    connect(open_checkpoint_dialog_ui_->SelectDirectoryComboBox, SIGNAL(activated(int)), this, SLOT(slotSelectDirectoryChanged(int)));
+-    connect(open_checkpoint_dialog_ui_->UpButton, SIGNAL(clicked()), this, SLOT(slotUPButton()));
+-    connect(open_checkpoint_dialog_ui_->SimCheckpointComboBox, SIGNAL(activated(int)), this, SLOT(slotSimCheckpointComboBox(int)));
+-    connect(open_checkpoint_dialog_ui_->OpenButton, SIGNAL(clicked()), this, SLOT(slotOpen()));
+-    connect(open_checkpoint_dialog_ui_->CancelButton, SIGNAL(clicked()), this, SLOT(close()));
++    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(doubleClicked(QModelIndex )),
++            this,SLOT(slotShowDir(QModelIndex )));
++    connect(open_checkpoint_dialog_ui_->CheckpointDirectoryListView,SIGNAL(clicked(QModelIndex)),
++            this,SLOT(slotOpenEnable(QModelIndex)));
++    connect(open_checkpoint_dialog_ui_->SelectDirectoryComboBox, SIGNAL(activated(int)),
++            this, SLOT(slotSelectDirectoryChanged(int)));
++    connect(open_checkpoint_dialog_ui_->UpButton, SIGNAL(clicked()),
++            this, SLOT(slotUPButton()));
++    connect(open_checkpoint_dialog_ui_->SimCheckpointComboBox, SIGNAL(activated(int)),
++            this, SLOT(slotSimCheckpointComboBox(int)));
++    connect(open_checkpoint_dialog_ui_->OpenButton, SIGNAL(clicked()),
++            this, SLOT(slotOpen()));
++    connect(open_checkpoint_dialog_ui_->CancelButton, SIGNAL(clicked()),
++            this, SLOT(close()));
+ }
+ 
+ OpenCheckpointDialog::~OpenCheckpointDialog() {
+@@ -51,14 +61,20 @@ void OpenCheckpointDialog::initSelectDirectoryComboBox(QModelIndex index)
+     int i = 0;
+     QModelIndex tempindex = index;
+     while(!FileSysmodel->fileName(tempindex).isEmpty()){
+-        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, FileSysmodel->fileName(tempindex), FileSysmodel->filePath(tempindex));
++        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(
++                    i, FileSysmodel->fileName(tempindex), FileSysmodel->filePath(tempindex));
+         tempindex = FileSysmodel->parent(tempindex);
+         i++;
+     }
+-    open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(i, "Compter", "My\ Computer");
++    open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(
++                i, "Compter", "My\ Computer");
+ }
+ 
+ void OpenCheckpointDialog::showFileInfoList(QModelIndex index){
+     open_checkpoint_dialog_ui_->CheckpointDirectoryListView->setRootIndex(index);
+     open_checkpoint_dialog_ui_->OpenButton->setEnabled(false);
+ }
++
++QString OpenCheckpointDialog::GetCheckpointName() {
++    return m_checkpoint_name;
++}
+diff --git a/open_checkpoint_dialog.h b/open_checkpoint_dialog.h
+index 6045e17..a925d2a 100644
+--- a/open_checkpoint_dialog.h
++++ b/open_checkpoint_dialog.h
+@@ -1,11 +1,13 @@
+ #ifndef OPEN_CHECKPOINT_DIALOG_H
+ #define OPEN_CHECKPOINT_DIALOG_H
+ 
++#include <QString>
+ #include <QDialog>
+ #include <QDirModel>
+ #include <QFileSystemModel>
+ 
+ #define _USE_DIRMODEL
++
+ namespace Ui {
+     class OpenCheckpointDialog;
+ }
+@@ -16,9 +18,13 @@ class OpenCheckpointDialog : public QDialog {
+ public:
+     explicit OpenCheckpointDialog(QDialog *parent = 0);
+     ~OpenCheckpointDialog();
++
++    QString GetCheckpointName();
++
+ private:
+     void initSelectDirectoryComboBox(QModelIndex index);
+     void showFileInfoList(QModelIndex index);
++
+ private slots:
+     void slotShowDir(QModelIndex index);
+     void slotSelectDirectoryChanged(int index);
+@@ -26,6 +32,7 @@ private slots:
+     void slotSimCheckpointComboBox(int index);
+     void slotOpenEnable(QModelIndex);
+     void slotOpen(void);
++
+ private:
+     Ui::OpenCheckpointDialog *open_checkpoint_dialog_ui_;
+ #ifdef _USE_DIRMODEL
+@@ -33,6 +40,7 @@ private:
+ #else
+     QFileSystemModel *FileSysmodel;
+ #endif
++    QString m_checkpoint_name;
+ };
+ 
+ #endif
+diff --git a/open_checkpoint_dialog_slots.cpp b/open_checkpoint_dialog_slots.cpp
+index 78c09c0..3197eb5 100644
+--- a/open_checkpoint_dialog_slots.cpp
++++ b/open_checkpoint_dialog_slots.cpp
+@@ -1,19 +1,19 @@
+-#include <QMessageBox>
+ #include "open_checkpoint_dialog.h"
+ #include "ui_open_checkpoint_dialog.h"
+ 
+ void OpenCheckpointDialog::slotShowDir(QModelIndex index){
+     if(FileSysmodel->isDir(index))
+     {
+-        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(0, FileSysmodel->fileName(index), FileSysmodel->filePath(index));
++        open_checkpoint_dialog_ui_->SelectDirectoryComboBox->insertItem(
++                    0, FileSysmodel->fileName(index), FileSysmodel->filePath(index));
+         open_checkpoint_dialog_ui_->SelectDirectoryComboBox->setCurrentIndex(0);
+         showFileInfoList(index);
+     }
+     else //file
+     {
+         QString FileObsolutePath = FileSysmodel->filePath(index);
+-        QMessageBox::warning(this, "Message", FileObsolutePath, QMessageBox::Ok);
+-        close();
++        m_checkpoint_name = FileObsolutePath;
++        accept();
+     }
+ }
+ 
+@@ -29,9 +29,11 @@ void OpenCheckpointDialog::slotSelectDirectoryChanged(int index)
+ void OpenCheckpointDialog::slotUPButton()
+ {
+     if(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->count() > 1){
+-        slotSelectDirectoryChanged(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex() + 1);
++        slotSelectDirectoryChanged(
++                    open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex() + 1);
+     }else{
+-        //slotSelectDirectoryChanged(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
++        //slotSelectDirectoryChanged(
++        //  open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
+     }
+ }
+ 
+@@ -42,7 +44,8 @@ void OpenCheckpointDialog::slotSimCheckpointComboBox(int index)
+ 
+     FileSysmodel->setNameFilters(string);
+ 
+-    QVariant ItemData = open_checkpoint_dialog_ui_->SelectDirectoryComboBox->itemData(open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
++    QVariant ItemData = open_checkpoint_dialog_ui_->SelectDirectoryComboBox->itemData(
++                open_checkpoint_dialog_ui_->SelectDirectoryComboBox->currentIndex());
+     QString ItemString = ItemData.value<QString>();
+ 
+     showFileInfoList(FileSysmodel->index(ItemString));
+diff --git a/open_command_line_window_dialog.cpp b/open_command_line_window_dialog.cpp
+index 1ce801d..6ead291 100644
+--- a/open_command_line_window_dialog.cpp
++++ b/open_command_line_window_dialog.cpp
+@@ -3,7 +3,7 @@
+ #include <QVBoxLayout>
+ 
+ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+-    QWidget(parent){
++    QWidget(parent) {
+     QSimConsole *console = QSimConsole::getInstance(this);
+     this->setFocusProxy((QWidget*)console);
+     this->setMinimumSize(640, 480);
+diff --git a/qconsole.cpp b/qconsole.cpp
+index 1e0313c..52ae39b 100644
+--- a/qconsole.cpp
++++ b/qconsole.cpp
+@@ -48,8 +48,6 @@ QSize PopupListWidget::sizeHint() const
+         const int vOffset = top + bottom;
+         const int hOffset = left + right;
+ 
+-
+-
+         bool vScrollOn = false;
+         int height = 0;
+         int width = 0;
+@@ -209,9 +207,10 @@ void QConsole::reset(const QString &welcomeText)
+         f.setFamily("Courier");
+         setCurrentFont(f);
+ #endif
+-
++        setTextColor(QColor("blue"));
+         append(welcomeText);
+         append("");
++        setTextColor(QApplication::palette().text().color());
+ 
+         //init attributes
+         historyIndex = 0;
+@@ -230,45 +229,45 @@ QConsole::QConsole(QWidget *parent, const QString &welcomeText)
+     //Disable undo/redo
+     setUndoRedoEnabled(false);
+ 
+-
+     //Disable context menu
+     //This menu is useful for undo/redo, cut/copy/paste, del, select all,
+     // see function QConsole::contextMenuEvent(...)
+     //setContextMenuPolicy(Qt::NoContextMenu);
+ 
+-
+     //resets the console
+     reset(welcomeText);
+-        const int tabwidth = QFontMetrics(currentFont()).width('a') * 4;
+-        setTabStopWidth(tabwidth);}
++    const int tabwidth = QFontMetrics(currentFont()).width('a') * 4;
++    setTabStopWidth(tabwidth);
++}
+ 
+ //Sets the prompt and cache the prompt length to optimize the processing speed
+ void QConsole::setPrompt(const QString &newPrompt, bool display)
+ {
+-        prompt = newPrompt;
+-        promptLength = prompt.length();
+-        //display the new prompt
+-        if (display)
+-            displayPrompt();
++    prompt = newPrompt;
++    promptLength = prompt.length();
++    //display the new prompt
++    if (display)
++        displayPrompt();
+ }
+ 
+-
+ //Displays the prompt and move the cursor to the end of the line.
+ void QConsole::displayPrompt()
+ {
+-        //Prevent previous text displayed to be undone
+-        setUndoRedoEnabled(false);
+-        //displays the prompt
+-        setTextColor(cmdColor_);
+-        QTextCursor cur = textCursor();
+-        cur.insertText(prompt);
+-        cur.movePosition(QTextCursor::EndOfLine);
+-        setTextCursor(cur);
+-        //Saves the paragraph number of the prompt
+-        promptParagraph = cur.blockNumber();
+-
+-        //Enable undo/redo for the actual command
+-        setUndoRedoEnabled(true);
++    //Prevent previous text displayed to be undone
++    setUndoRedoEnabled(false);
++    //displays the prompt
++    //setTextColor(cmdColor_);
++    setTextColor(QColor("red"));
++    QTextCursor cur = textCursor();
++    cur.insertText(prompt);
++    setTextColor(cmdColor_);
++    cur.movePosition(QTextCursor::EndOfLine);
++    setTextCursor(cur);
++    //Saves the paragraph number of the prompt
++    promptParagraph = cur.blockNumber();
++    setTextColor(cmdColor_);
++    //Enable undo/redo for the actual command
++    setUndoRedoEnabled(true);
+ }
+ 
+ void QConsole::setFont(const QFont& f) {
+@@ -281,8 +280,6 @@ void QConsole::setFont(const QFont& f) {
+         setTextCursor(oldCursor);
+ }
+ 
+-
+-
+ //Give suggestions to autocomplete a command (should be reimplemented)
+ //the return value of the function is the string list of all suggestions
+ QStringList QConsole::suggestCommand(const QString&, QString& prefix)
+@@ -313,7 +310,6 @@ void QConsole::handleTabKeyPress()
+                         replaceCurrentCommand(commandPrefix + popup->selected());
+                 delete popup;
+ #else
+-
+                 setTextColor(completionColor);
+                 append(sl.join(", ") + "\n");
+                 setTextColor(cmdColor());
+@@ -327,7 +323,7 @@ void QConsole::handleTabKeyPress()
+ // If return pressed, do the evaluation and append the result
+ void QConsole::handleReturnKeyPress()
+ {
+-        //Get the command to validate
++    //Get the command to validate
+     QString command = getCurrentCommand();
+     //execute the command and get back its text result and its return value
+     if (isCommandComplete(command))
+@@ -392,8 +388,7 @@ void QConsole::setHome(bool select)
+                                                                                                                         QTextCursor::MoveAnchor);
+         if(textCursor().blockNumber() == promptParagraph)
+         {
+-            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :
+-                                                                                                             QTextCursor::MoveAnchor,
++            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :                                                                                                            QTextCursor::MoveAnchor,
+                                                     promptLength);
+         }
+         setTextCursor(cursor);
+@@ -650,7 +645,8 @@ bool QConsole::execCommand(const QString &command, bool writeCommand,
+         moveCursor(QTextCursor::End);
+         //Display the prompt again
+         if (showPrompt)
+-            displayPrompt();*/
++            displayPrompt();
++*/
+         return !res;
+ }
+ 
+diff --git a/qconsole.h b/qconsole.h
+index 66bb2ea..2ab51d1 100644
+--- a/qconsole.h
++++ b/qconsole.h
+@@ -104,7 +104,7 @@ class QConsole : public QTextEdit
+ public:
+         //constructor
+         QConsole(QWidget *parent = NULL, const QString &welcomeText = "");
+-        //set the prompt of the console 显示提示符“<<<”
++        //set the prompt of the console 显示提示符
+         void setPrompt(const QString &prompt, bool display = true);
+         //execCommand(QString) executes the command and displays back its result
+         bool execCommand(const QString &command, bool writeCommand = true,
+diff --git a/tsh_if.c b/tsh_if.c
+index 8f60b49..c0ce2f5 100644
+--- a/tsh_if.c
++++ b/tsh_if.c
+@@ -14,11 +14,9 @@ static char* output_buffer = NULL;
+ 
+ int init_redestration() {
+     output_buffer = (char*)malloc(sizeof(char) * MAX_BUFFERSIZE);
+-    if(output_buffer == NULL)
+-    {
++    if(output_buffer == NULL) {
+         return -1;
+     }
+-
+     return 0;
+ }
+ 
+@@ -53,4 +51,3 @@ char* get_output() {
+     }
+     return output_buffer;
+ }
+-
+=====================================================
+commit fdedea25aa6e0fa96182be3a760fa048fef72443
+Author: durd07 <durd07@gmial.com>
+Date:   Wed Nov 6 00:34:01 2013 +0800
+
+    change main.c form . to ->
+
+diff --git a/main.cpp b/main.cpp
 index 9ddf12b..106c2ae 100644
 --- a/main.cpp
 +++ b/main.cpp

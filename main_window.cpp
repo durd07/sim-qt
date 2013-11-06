@@ -2,47 +2,21 @@
 #include "ui_main_window.h"
 #include "sim_application.h"
 #include <QLabel>
-
-static MainWindow *gbl_cur_main_window = NULL;
+#include <QHBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     main_ui_(new Ui::MainWindow) {
-    gbl_cur_main_window = this;
     main_ui_->setupUi(this);
 
     //delete object when close() is called
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_QuitOnClose);
-#if 1                                   // fix me
-    QLabel *x = new QLabel("111          1");
-    x->setAlignment(Qt::AlignCenter);
-    x->setMinimumSize(x->sizeHint());
-    x->setFrameShape(QFrame::WinPanel);
-    x->setFrameShadow(QFrame::Sunken);
 
-    QLabel *y = new QLabel("222");
-    y->setAlignment(Qt::AlignCenter);
-    y->setMinimumSize(x->sizeHint());
-    y->setFrameShape(QFrame::WinPanel);
-    y->setFrameShadow(QFrame::Sunken);
+    init_StatusBar();
 
-    QLabel *z = new QLabel("333");
-    z->setAlignment(Qt::AlignCenter);
-    z->setMinimumSize(x->sizeHint());
-    z->setFrameShape(QFrame::WinPanel);
-    z->setFrameShadow(QFrame::Sunken);
-
-    main_ui_->statusBar->addWidget(x, 0);
-    main_ui_->statusBar->addWidget(y, 1);
-    main_ui_->statusBar->addWidget(z, 2);
-
-    x->setText(tr("baby baby"));
-    y->setText(tr("baby baby"));
-    z->setText(tr("baby baby"));
-#endif
     setFileMenu();
-
+    setToolsMenu();
 }
 
 void MainWindow::setFileMenu(void) {
@@ -63,12 +37,42 @@ void MainWindow::setFileMenu(void) {
     connect(main_ui_->actionChangeWorkspace, SIGNAL(triggered()),
             this, SLOT(changeWorkspace()));
     connect(main_ui_->actionExit, SIGNAL(triggered()),
-            simApp, SLOT(closeAllWindows()));
-
-    connect(main_ui_->actionCommandLineWindow, SIGNAL(triggered()),
-            this, SLOT(openCommandLineWindow()));
+            this, SLOT(close()));
 }
 
+void MainWindow::setToolsMenu(void) {
+    connect(main_ui_->actionCommandLineWindow, SIGNAL(triggered()),
+            this, SLOT(openCommandLineWindow()));
+
+}
+
+void MainWindow::init_StatusBar(void) {
+    QLabel *x = new QLabel(" W999 ");
+    x->setAlignment(Qt::AlignCenter);
+    x->setMinimumSize(x->sizeHint());
+    x->setFrameShape(QFrame::WinPanel);
+    x->setFrameShadow(QFrame::Sunken);
+
+    QLabel *y = new QLabel("222");
+    y->setAlignment(Qt::AlignCenter);
+    y->setMinimumSize(y->sizeHint());
+    y->setFrameShape(QFrame::WinPanel);
+    y->setFrameShadow(QFrame::Sunken);
+
+    QLabel *z = new QLabel("333");
+    z->setAlignment(Qt::AlignCenter);
+    z->setMinimumSize(z->sizeHint());
+    z->setFrameShape(QFrame::WinPanel);
+    z->setFrameShadow(QFrame::Sunken);
+
+    main_ui_->statusBar->addWidget(x, 0);
+    main_ui_->statusBar->addWidget(y, 1);
+    main_ui_->statusBar->addWidget(z, 2);
+
+    x->setText(tr("baby baby"));
+    y->setText(tr("baby baby"));
+    z->setText(tr("baby baby"));
+}
 MainWindow::~MainWindow() {
     delete main_ui_;
 }

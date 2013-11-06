@@ -48,8 +48,6 @@ QSize PopupListWidget::sizeHint() const
         const int vOffset = top + bottom;
         const int hOffset = left + right;
 
-
-
         bool vScrollOn = false;
         int height = 0;
         int width = 0;
@@ -209,9 +207,10 @@ void QConsole::reset(const QString &welcomeText)
         f.setFamily("Courier");
         setCurrentFont(f);
 #endif
-
+        setTextColor(QColor("blue"));
         append(welcomeText);
         append("");
+        setTextColor(QApplication::palette().text().color());
 
         //init attributes
         historyIndex = 0;
@@ -230,45 +229,45 @@ QConsole::QConsole(QWidget *parent, const QString &welcomeText)
     //Disable undo/redo
     setUndoRedoEnabled(false);
 
-
     //Disable context menu
     //This menu is useful for undo/redo, cut/copy/paste, del, select all,
     // see function QConsole::contextMenuEvent(...)
     //setContextMenuPolicy(Qt::NoContextMenu);
 
-
     //resets the console
     reset(welcomeText);
-        const int tabwidth = QFontMetrics(currentFont()).width('a') * 4;
-        setTabStopWidth(tabwidth);}
+    const int tabwidth = QFontMetrics(currentFont()).width('a') * 4;
+    setTabStopWidth(tabwidth);
+}
 
 //Sets the prompt and cache the prompt length to optimize the processing speed
 void QConsole::setPrompt(const QString &newPrompt, bool display)
 {
-        prompt = newPrompt;
-        promptLength = prompt.length();
-        //display the new prompt
-        if (display)
-            displayPrompt();
+    prompt = newPrompt;
+    promptLength = prompt.length();
+    //display the new prompt
+    if (display)
+        displayPrompt();
 }
-
 
 //Displays the prompt and move the cursor to the end of the line.
 void QConsole::displayPrompt()
 {
-        //Prevent previous text displayed to be undone
-        setUndoRedoEnabled(false);
-        //displays the prompt
-        setTextColor(cmdColor_);
-        QTextCursor cur = textCursor();
-        cur.insertText(prompt);
-        cur.movePosition(QTextCursor::EndOfLine);
-        setTextCursor(cur);
-        //Saves the paragraph number of the prompt
-        promptParagraph = cur.blockNumber();
-
-        //Enable undo/redo for the actual command
-        setUndoRedoEnabled(true);
+    //Prevent previous text displayed to be undone
+    setUndoRedoEnabled(false);
+    //displays the prompt
+    //setTextColor(cmdColor_);
+    setTextColor(QColor("red"));
+    QTextCursor cur = textCursor();
+    cur.insertText(prompt);
+    setTextColor(cmdColor_);
+    cur.movePosition(QTextCursor::EndOfLine);
+    setTextCursor(cur);
+    //Saves the paragraph number of the prompt
+    promptParagraph = cur.blockNumber();
+    setTextColor(cmdColor_);
+    //Enable undo/redo for the actual command
+    setUndoRedoEnabled(true);
 }
 
 void QConsole::setFont(const QFont& f) {
@@ -280,8 +279,6 @@ void QConsole::setFont(const QFont& f) {
         setCurrentFont(f);
         setTextCursor(oldCursor);
 }
-
-
 
 //Give suggestions to autocomplete a command (should be reimplemented)
 //the return value of the function is the string list of all suggestions
@@ -313,7 +310,6 @@ void QConsole::handleTabKeyPress()
                         replaceCurrentCommand(commandPrefix + popup->selected());
                 delete popup;
 #else
-
                 setTextColor(completionColor);
                 append(sl.join(", ") + "\n");
                 setTextColor(cmdColor());
@@ -327,7 +323,7 @@ void QConsole::handleTabKeyPress()
 // If return pressed, do the evaluation and append the result
 void QConsole::handleReturnKeyPress()
 {
-        //Get the command to validate
+    //Get the command to validate
     QString command = getCurrentCommand();
     //execute the command and get back its text result and its return value
     if (isCommandComplete(command))
@@ -392,8 +388,7 @@ void QConsole::setHome(bool select)
                                                                                                                         QTextCursor::MoveAnchor);
         if(textCursor().blockNumber() == promptParagraph)
         {
-            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :
-                                                                                                             QTextCursor::MoveAnchor,
+            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :                                                                                                            QTextCursor::MoveAnchor,
                                                     promptLength);
         }
         setTextCursor(cursor);
@@ -650,7 +645,8 @@ bool QConsole::execCommand(const QString &command, bool writeCommand,
         moveCursor(QTextCursor::End);
         //Display the prompt again
         if (showPrompt)
-            displayPrompt();*/
+            displayPrompt();
+*/
         return !res;
 }
 

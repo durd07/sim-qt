@@ -2,9 +2,6 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
-#include "open_checkpoint_dialog.h"
-#include "create_workspace_dialog.h"
-#include "open_command_line_window_dialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -22,10 +19,14 @@ private:
     void setEditMenu(void);
     void setRunMenu(void);
     void setDebugMenu(void);
+    void setToolsMenu(void);
     void setWindowMenu(void);
     void setHelpMenu(void);
+
+    void init_StatusBar(void);
 signals:
 private slots:
+    //File Menu
     void newEmptySession(void);
     void newSessionFromScript(void);
     void openCheckpoint(void);
@@ -38,12 +39,8 @@ private slots:
     void createWorkspace(void);
     void changeWorkspace(void);
 
+    //Tool Menu
     void openCommandLineWindow(void);
-
-private:
-    void setToolsMenu(void);
-signals:
-private slots:
 
 private:
     Ui::MainWindow *main_ui_;

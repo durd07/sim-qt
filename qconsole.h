@@ -104,7 +104,7 @@ class QConsole : public QTextEdit
 public:
         //constructor
         QConsole(QWidget *parent = NULL, const QString &welcomeText = "");
-        //set the prompt of the console 显示提示符“<<<”
+        //set the prompt of the console 显示提示符
         void setPrompt(const QString &prompt, bool display = true);
         //execCommand(QString) executes the command and displays back its result
         bool execCommand(const QString &command, bool writeCommand = true,
