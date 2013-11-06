@@ -51,7 +51,7 @@ QSize PopupListWidget::sizeHint() const
         bool vScrollOn = false;
         int height = 0;
         int width = 0;
-        for (int i=0; i<this->count(); ++i) {
+        for (int i=0; i < this->count(); ++i) {
                 QModelIndex index = model->index(i, 0);
                 QSize itemSizeHint = delegate->sizeHint(sovi, index);
                 if (itemSizeHint.width() > width)
@@ -260,7 +260,6 @@ void QConsole::displayPrompt()
     setTextColor(QColor("red"));
     QTextCursor cur = textCursor();
     cur.insertText(prompt);
-    setTextColor(cmdColor_);
     cur.movePosition(QTextCursor::EndOfLine);
     setTextCursor(cur);
     //Saves the paragraph number of the prompt
@@ -288,6 +287,7 @@ QStringList QConsole::suggestCommand(const QString&, QString& prefix)
         return QStringList();
 }
 
+#define USE_POPUP_COMPLETER
 //Treat the tab key & autocomplete the current command
 void QConsole::handleTabKeyPress()
 {
@@ -825,7 +825,6 @@ void QConsole::del()
                 textCursor().deleteChar();
         }
 }
-
 
 void QConsole::correctPathName(QString& pathName)
 {

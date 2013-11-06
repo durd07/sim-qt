@@ -40,6 +40,7 @@ extern "C" {
 }
 #endif
 #include <QDebug>
+#include <string.h>
 
 QString resultString;
 
@@ -73,6 +74,7 @@ QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
 
     //redestration
     init_redestration();
+    getAllCommandList();
 }
 char save_error_type[1024], save_error_info[1024];
 
@@ -87,41 +89,29 @@ QSimConsole::~QSimConsole()
 QString QSimConsole::interpretCommand(const QString &command, int *res)
 {
     *res = 0;
+    QConsole::interpretCommand(command, res);
     char* cmd = command.toLatin1().data();
 
     set_socket_nonblock(::parent);
     exec_command(cmd);
     append("");
+    setTextColor(QColor("blue"));
     myTimerId = startTimer(300);
     return "";
 }
 
 QStringList QSimConsole::suggestCommand(const QString &cmd, QString& prefix)
 {
-    char run[255];
-    int n =0;
     QStringList list;
     prefix = "";
     resultString="";
     if (!cmd.isEmpty()) {
-        do {
-            snprintf(run,255,"print completer.complete(\"%s\",%d)\n",
-                     cmd.constData(),n);
-                     //cmd.toAscii().data(),n);
-            //PyRun_SimpleString(run);
-            resultString=resultString.trimmed(); //strip trialing newline
-            if (resultString!="None")
-            {
-                list.append(resultString);
-                resultString="";
+        QList<QString>::Iterator it = all_command_list.begin();
+        for(it = all_command_list.begin(); it != all_command_list.end(); ++it) {
+            if(!strncmp(cmd.toStdString().c_str(), (*it).toStdString().c_str(), cmd.count())) {
+                 list.append(*it);
             }
-            else
-            {
-                resultString="";
-                break;
-            }
-            n++;
-        } while (true);
+        }
     }
     list.removeDuplicates();
     return list;
@@ -147,3 +137,7 @@ void QSimConsole::timerEvent(QTimerEvent *event)
     }
 }
 
+void QSimConsole::getAllCommandList()
+{
+    all_command_list << "ls" << "uname -a" << "ll" << "who" << "whoami" << "whoareyou";
+}

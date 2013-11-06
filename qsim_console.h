@@ -57,10 +57,12 @@ protected:
     void timerEvent(QTimerEvent *event);
 private:
 
+    void getAllCommandList();
+
+private:
     //The instance
     static QSimConsole *theInstance;
 
-private:
     // string holding the current command
     QString command;
 
@@ -68,6 +70,8 @@ private:
     int lines;
 
     int myTimerId;
+
+    QStringList all_command_list;
 };
 
 #endif

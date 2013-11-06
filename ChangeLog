@@ -1,3 +1,154 @@
+diff --git a/qconsole.cpp b/qconsole.cpp
+index 52ae39b..c90bf10 100644
+--- a/qconsole.cpp
++++ b/qconsole.cpp
+@@ -51,7 +51,7 @@ QSize PopupListWidget::sizeHint() const
+         bool vScrollOn = false;
+         int height = 0;
+         int width = 0;
+-        for (int i=0; i<this->count(); ++i) {
++        for (int i=0; i < this->count(); ++i) {
+                 QModelIndex index = model->index(i, 0);
+                 QSize itemSizeHint = delegate->sizeHint(sovi, index);
+                 if (itemSizeHint.width() > width)
+@@ -260,7 +260,6 @@ void QConsole::displayPrompt()
+     setTextColor(QColor("red"));
+     QTextCursor cur = textCursor();
+     cur.insertText(prompt);
+-    setTextColor(cmdColor_);
+     cur.movePosition(QTextCursor::EndOfLine);
+     setTextCursor(cur);
+     //Saves the paragraph number of the prompt
+@@ -288,6 +287,7 @@ QStringList QConsole::suggestCommand(const QString&, QString& prefix)
+         return QStringList();
+ }
+ 
++#define USE_POPUP_COMPLETER
+ //Treat the tab key & autocomplete the current command
+ void QConsole::handleTabKeyPress()
+ {
+@@ -826,7 +826,6 @@ void QConsole::del()
+         }
+ }
+ 
+-
+ void QConsole::correctPathName(QString& pathName)
+ {
+         if(pathName.contains(tr(":\\")))
+diff --git a/qsim_console.cpp b/qsim_console.cpp
+index acab29a..534ce32 100644
+--- a/qsim_console.cpp
++++ b/qsim_console.cpp
+@@ -40,6 +40,7 @@ extern "C" {
+ }
+ #endif
+ #include <QDebug>
++#include <string.h>
+ 
+ QString resultString;
+ 
+@@ -73,6 +74,7 @@ QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
+ 
+     //redestration
+     init_redestration();
++    getAllCommandList();
+ }
+ char save_error_type[1024], save_error_info[1024];
+ 
+@@ -87,41 +89,29 @@ QSimConsole::~QSimConsole()
+ QString QSimConsole::interpretCommand(const QString &command, int *res)
+ {
+     *res = 0;
++    QConsole::interpretCommand(command, res);
+     char* cmd = command.toLatin1().data();
+ 
+     set_socket_nonblock(::parent);
+     exec_command(cmd);
+     append("");
++    setTextColor(QColor("blue"));
+     myTimerId = startTimer(300);
+     return "";
+ }
+ 
+ QStringList QSimConsole::suggestCommand(const QString &cmd, QString& prefix)
+ {
+-    char run[255];
+-    int n =0;
+     QStringList list;
+     prefix = "";
+     resultString="";
+     if (!cmd.isEmpty()) {
+-        do {
+-            snprintf(run,255,"print completer.complete(\"%s\",%d)\n",
+-                     cmd.constData(),n);
+-                     //cmd.toAscii().data(),n);
+-            //PyRun_SimpleString(run);
+-            resultString=resultString.trimmed(); //strip trialing newline
+-            if (resultString!="None")
+-            {
+-                list.append(resultString);
+-                resultString="";
++        QList<QString>::Iterator it = all_command_list.begin();
++        for(it = all_command_list.begin(); it != all_command_list.end(); ++it) {
++            if(!strncmp(cmd.toStdString().c_str(), (*it).toStdString().c_str(), cmd.count())) {
++                 list.append(*it);
+             }
+-            else
+-            {
+-                resultString="";
+-                break;
+-            }
+-            n++;
+-        } while (true);
++        }
+     }
+     list.removeDuplicates();
+     return list;
+@@ -147,3 +137,7 @@ void QSimConsole::timerEvent(QTimerEvent *event)
+     }
+ }
+ 
++void QSimConsole::getAllCommandList()
++{
++    all_command_list << "ls" << "uname -a" << "ll" << "who" << "whoami" << "whoareyou";
++}
+diff --git a/qsim_console.h b/qsim_console.h
+index af165c4..0ccada0 100644
+--- a/qsim_console.h
++++ b/qsim_console.h
+@@ -57,10 +57,12 @@ protected:
+     void timerEvent(QTimerEvent *event);
+ private:
+ 
++    void getAllCommandList();
++
++private:
+     //The instance
+     static QSimConsole *theInstance;
+ 
+-private:
+     // string holding the current command
+     QString command;
+ 
+@@ -68,6 +70,8 @@ private:
+     int lines;
+ 
+     int myTimerId;
++
++    QStringList all_command_list;
+ };
+ 
+ #endif
+=====================================================
+commit c99bbdb5c699a427b5025643177b29b31739b265
+Author: durd <durd07@gmail.com>
+Date:   Wed Nov 6 18:07:56 2013 +0800
+
+    polished
+    
+    1. change open_checkpoint_dialog with the QString output
+    2. change other little things
+
 diff --git a/main.cpp b/main.cpp
 index 106c2ae..5cf30ea 100644
 --- a/main.cpp
