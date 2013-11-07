@@ -1,3 +1,337 @@
+diff --git a/main_window.cpp b/main_window.cpp
+index 2907d44..553f406 100644
+--- a/main_window.cpp
++++ b/main_window.cpp
+@@ -1,6 +1,7 @@
+ #include "main_window.h"
+ #include "ui_main_window.h"
+ #include "sim_application.h"
++#include "open_command_line_window_dialog.h"
+ #include <QLabel>
+ #include <QHBoxLayout>
+ 
+@@ -17,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
+ 
+     setFileMenu();
+     setToolsMenu();
++
++    command_line_window = NULL;
+ }
+ 
+ void MainWindow::setFileMenu(void) {
+@@ -74,5 +77,6 @@ void MainWindow::init_StatusBar(void) {
+     z->setText(tr("baby baby"));
+ }
+ MainWindow::~MainWindow() {
++    delete command_line_window;
+     delete main_ui_;
+ }
+diff --git a/main_window.h b/main_window.h
+index d7c5b9a..d2d658f 100644
+--- a/main_window.h
++++ b/main_window.h
+@@ -2,6 +2,7 @@
+ #define MAIN_WINDOW_H
+ 
+ #include <QMainWindow>
++#include "open_command_line_window_dialog.h"
+ 
+ namespace Ui {
+     class MainWindow;
+@@ -44,6 +45,7 @@ private slots:
+ 
+ private:
+     Ui::MainWindow *main_ui_;
++    OpenCommandLineWindowDialog *command_line_window;
+ };
+ 
+ #endif
+diff --git a/main_window_tool_slots.cpp b/main_window_tool_slots.cpp
+index 5f316cb..6be51c5 100644
+--- a/main_window_tool_slots.cpp
++++ b/main_window_tool_slots.cpp
+@@ -1,10 +1,11 @@
+ #include "main_window.h"
+ #include "qsim_console.h"
+-#include "open_command_line_window_dialog.h"
+ #include <QFileDialog>
+ 
+ void MainWindow::openCommandLineWindow(void)
+ {
+-    OpenCommandLineWindowDialog *command_line_window = new OpenCommandLineWindowDialog;
++    if(NULL == command_line_window) {
++    command_line_window = new OpenCommandLineWindowDialog;
++    }
+     command_line_window->show();
+ }
+diff --git a/main_window_tools_slots.cpp b/main_window_tools_slots.cpp
+deleted file mode 100644
+index fc9b33e..0000000
+--- a/main_window_tools_slots.cpp
++++ /dev/null
+@@ -1,7 +0,0 @@
+-#include "main_window.h"
+-#include "ui_cli.h"
+-
+-void MainWindow::openCommandLineWindow(void) {
+-
+-}
+-
+diff --git a/open_command_line_window_dialog.cpp b/open_command_line_window_dialog.cpp
+index 6ead291..2a2d588 100644
+--- a/open_command_line_window_dialog.cpp
++++ b/open_command_line_window_dialog.cpp
+@@ -4,7 +4,7 @@
+ 
+ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+     QWidget(parent) {
+-    QSimConsole *console = QSimConsole::getInstance(this);
++    console = QSimConsole::getInstance(this);
+     this->setFocusProxy((QWidget*)console);
+     this->setMinimumSize(640, 480);
+     this->setWindowTitle(tr("Simics Command Line"));
+@@ -16,5 +16,7 @@ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+ }
+ 
+ OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
++    console->~QSimConsole();
++    delete layout;
+ }
+ 
+diff --git a/open_command_line_window_dialog.h b/open_command_line_window_dialog.h
+index 39c57a1..6d47bd1 100644
+--- a/open_command_line_window_dialog.h
++++ b/open_command_line_window_dialog.h
+@@ -2,8 +2,8 @@
+ #define OPEN_COMMAND_WINDOW_DIALOG_H
+ 
+ #include <QWidget>
+-
+-class QVBoxLayout;
++#include <QVBoxLayout>
++#include "qsim_console.h"
+ 
+ class OpenCommandLineWindowDialog : public QWidget {
+     Q_OBJECT
+@@ -14,6 +14,7 @@ public:
+ 
+ private:
+     QVBoxLayout *layout;
++    QSimConsole *console;
+ };
+ 
+ #endif
+diff --git a/qconsole.cpp b/qconsole.cpp
+index c90bf10..d51f619 100644
+--- a/qconsole.cpp
++++ b/qconsole.cpp
+@@ -256,15 +256,13 @@ void QConsole::displayPrompt()
+     //Prevent previous text displayed to be undone
+     setUndoRedoEnabled(false);
+     //displays the prompt
+-    //setTextColor(cmdColor_);
+-    setTextColor(QColor("red"));
++    setTextColor(cmdColor_);
+     QTextCursor cur = textCursor();
+     cur.insertText(prompt);
+     cur.movePosition(QTextCursor::EndOfLine);
+     setTextCursor(cur);
+     //Saves the paragraph number of the prompt
+     promptParagraph = cur.blockNumber();
+-    setTextColor(cmdColor_);
+     //Enable undo/redo for the actual command
+     setUndoRedoEnabled(true);
+ }
+@@ -530,7 +528,7 @@ QString QConsole::getCurrentCommand()
+         cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+         QString command = cursor.selectedText();
+         cursor.clearSelection();
+-        return command;
++        return command.trimmed();
+ }
+ 
+ //Replace current command with a new one
+diff --git a/qsim_console.cpp b/qsim_console.cpp
+index 534ce32..f29abea 100644
+--- a/qsim_console.cpp
++++ b/qsim_console.cpp
+@@ -41,12 +41,15 @@ extern "C" {
+ #endif
+ #include <QDebug>
+ #include <string.h>
++#include <QFile>
++#include <QTextStream>
+ 
+ QString resultString;
+ 
+ void QSimConsole::printHistory()
+ {
+     uint index = 1;
++    resultString = "";
+     for ( QStringList::Iterator it = history.begin(); it != history.end(); ++it )
+     {
+         resultString.append(QString("%1\t%2\n").arg(index).arg(*it));
+@@ -69,12 +72,15 @@ QSimConsole *QSimConsole::getInstance(QWidget *parent, const QString& welcomeTex
+ QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
+         QConsole(parent, welcomeText),lines(0)
+ {
++    myTimerId = 0;
+     //set the Python Prompt
+     setNormalPrompt(true);
+ 
+     //redestration
+     init_redestration();
++    set_socket_nonblock(::parent);
+     getAllCommandList();
++    getAllHistoryList();
+ }
+ char save_error_type[1024], save_error_info[1024];
+ 
+@@ -82,6 +88,7 @@ char save_error_type[1024], save_error_info[1024];
+ QSimConsole::~QSimConsole()
+ {
+     destroy_redestration();
++    printHistoryToFile();
+ }
+ 
+ //Call the Python interpreter to execute the command
+@@ -90,13 +97,32 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
+ {
+     *res = 0;
+     QConsole::interpretCommand(command, res);
+-    char* cmd = command.toLatin1().data();
++    if(command == "") {
++        append("");
++        displayPrompt();
++        return "";
++    }
+ 
+-    set_socket_nonblock(::parent);
+-    exec_command(cmd);
+-    append("");
+-    setTextColor(QColor("blue"));
+-    myTimerId = startTimer(300);
++    if(command == QString(tr("history"))) {
++        printHistory();
++        append(resultString);
++        displayPrompt();
++        return "";
++    }
++
++    if(0 == myTimerId) {
++        char* cmd = command.toLatin1().data();
++        exec_process_over = 0;
++        exec_command(cmd);
++        append("");
++        setTextColor(QColor("blue"));
++        myTimerId = startTimer(300);
++    }
++    else {
++        append("");
++        displayPrompt();
++        return "";
++    }
+     return "";
+ }
+ 
+@@ -137,7 +163,49 @@ void QSimConsole::timerEvent(QTimerEvent *event)
+     }
+ }
+ 
+-void QSimConsole::getAllCommandList()
+-{
+-    all_command_list << "ls" << "uname -a" << "ll" << "who" << "whoami" << "whoareyou";
++void QSimConsole::getAllCommandList() {
++    QFile command_file(QString(tr(".command")));
++    if(!command_file.open(QIODevice::ReadWrite)) {
++        qDebug() << "getAllCommandList ### ERROR ###\n";
++        return;
++    }
++
++    QTextStream infile(&command_file);
++    QString command_string = infile.readAll();
++
++    all_command_list = command_string.split("\n");
++    command_file.close();
++}
++
++void QSimConsole::getAllHistoryList() {
++    QFile history_file(QString(tr(".history")));
++    if(!history_file.open(QIODevice::ReadWrite)) {
++         qDebug() << "getAllCommandList ### ERROR ###\n";
++         return;
++     }
++
++     QTextStream infile(&history_file);
++     QString history_string = infile.readAll();
++
++     all_history_list = history_string.split("\n");
++     history = all_history_list;
++     historyIndex = history.count();
++     history_file.close();
++}
++
++void QSimConsole::printHistoryToFile() {
++    QFile history_file(QString(tr(".history")));
++    if(!history_file.open(QIODevice::WriteOnly)) {
++         qDebug() << "getAllCommandList ### ERROR ###\n";
++         return;
++     }
++
++    QTextStream outfile(&history_file);
++
++    for(QStringList::Iterator it = history.begin(); it != history.end(); ++it) {
++        if("" != *it) {
++            outfile << *it << "\n";
++        }
++    }
++    history_file.close();
+ }
+diff --git a/qsim_console.h b/qsim_console.h
+index 0ccada0..caa38af 100644
+--- a/qsim_console.h
++++ b/qsim_console.h
+@@ -55,9 +55,12 @@ protected:
+     void setNormalPrompt(bool display) { setPrompt("simics# ", display); }
+     void setMultilinePrompt(bool display) { setPrompt("...", display); }
+     void timerEvent(QTimerEvent *event);
+-private:
+ 
++private:
+     void getAllCommandList();
++    void getAllHistoryList();
++public:
++    void printHistoryToFile();
+ 
+ private:
+     //The instance
+@@ -72,6 +75,7 @@ private:
+     int myTimerId;
+ 
+     QStringList all_command_list;
++    QStringList all_history_list;
+ };
+ 
+ #endif
+=====================================================
+commit c454b43ed40c909b35126b34890383eac271e135
+Author: durd07 <durd07@gmial.com>
+Date:   Thu Nov 7 00:23:42 2013 +0800
+
+    polished the command_line_window
+    
+    1. command_line_window 实现了历史上翻功能
+    2. command_line_window 实现了Tab自动补全命令功能
+    3. 对不同的字符赋予不同的颜色
+    
+    后继需要修正点：
+    1. command_line_window的可用command
+    列表的实现，通过读文件读入，关闭窗口时写文件
+    2. 提示符之后输入命令后全删除命令会使得重新输入的命令也是红色;修正
+    3. history要写入文件，再开时加载文件
+    4. MainWindows statusbar 三个Label等分。
+    5. command_line_window 光标在左右控制键控制在命令之间，不能跨越其他地区
+
 diff --git a/qconsole.cpp b/qconsole.cpp
 index 52ae39b..c90bf10 100644
 --- a/qconsole.cpp

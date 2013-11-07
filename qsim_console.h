@@ -55,9 +55,12 @@ protected:
     void setNormalPrompt(bool display) { setPrompt("simics# ", display); }
     void setMultilinePrompt(bool display) { setPrompt("...", display); }
     void timerEvent(QTimerEvent *event);
-private:
 
+private:
     void getAllCommandList();
+    void getAllHistoryList();
+public:
+    void printHistoryToFile();
 
 private:
     //The instance
@@ -72,6 +75,7 @@ private:
     int myTimerId;
 
     QStringList all_command_list;
+    QStringList all_history_list;
 };
 
 #endif

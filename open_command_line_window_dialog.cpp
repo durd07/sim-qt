@@ -4,7 +4,7 @@
 
 OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
     QWidget(parent) {
-    QSimConsole *console = QSimConsole::getInstance(this);
+    console = QSimConsole::getInstance(this);
     this->setFocusProxy((QWidget*)console);
     this->setMinimumSize(640, 480);
     this->setWindowTitle(tr("Simics Command Line"));
@@ -16,5 +16,7 @@ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
 }
 
 OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
+    console->~QSimConsole();
+    delete layout;
 }
 

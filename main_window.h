@@ -2,6 +2,7 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include "open_command_line_window_dialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -44,6 +45,7 @@ private slots:
 
 private:
     Ui::MainWindow *main_ui_;
+    OpenCommandLineWindowDialog *command_line_window;
 };
 
 #endif

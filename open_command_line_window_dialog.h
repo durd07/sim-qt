@@ -2,8 +2,8 @@
 #define OPEN_COMMAND_WINDOW_DIALOG_H
 
 #include <QWidget>
-
-class QVBoxLayout;
+#include <QVBoxLayout>
+#include "qsim_console.h"
 
 class OpenCommandLineWindowDialog : public QWidget {
     Q_OBJECT
@@ -14,6 +14,7 @@ public:
 
 private:
     QVBoxLayout *layout;
+    QSimConsole *console;
 };
 
 #endif

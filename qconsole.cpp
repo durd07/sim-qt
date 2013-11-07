@@ -256,15 +256,13 @@ void QConsole::displayPrompt()
     //Prevent previous text displayed to be undone
     setUndoRedoEnabled(false);
     //displays the prompt
-    //setTextColor(cmdColor_);
-    setTextColor(QColor("red"));
+    setTextColor(cmdColor_);
     QTextCursor cur = textCursor();
     cur.insertText(prompt);
     cur.movePosition(QTextCursor::EndOfLine);
     setTextCursor(cur);
     //Saves the paragraph number of the prompt
     promptParagraph = cur.blockNumber();
-    setTextColor(cmdColor_);
     //Enable undo/redo for the actual command
     setUndoRedoEnabled(true);
 }
@@ -530,7 +528,7 @@ QString QConsole::getCurrentCommand()
         cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
         QString command = cursor.selectedText();
         cursor.clearSelection();
-        return command;
+        return command.trimmed();
 }
 
 //Replace current command with a new one

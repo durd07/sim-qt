@@ -41,12 +41,15 @@ extern "C" {
 #endif
 #include <QDebug>
 #include <string.h>
+#include <QFile>
+#include <QTextStream>
 
 QString resultString;
 
 void QSimConsole::printHistory()
 {
     uint index = 1;
+    resultString = "";
     for ( QStringList::Iterator it = history.begin(); it != history.end(); ++it )
     {
         resultString.append(QString("%1\t%2\n").arg(index).arg(*it));
@@ -69,12 +72,15 @@ QSimConsole *QSimConsole::getInstance(QWidget *parent, const QString& welcomeTex
 QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
         QConsole(parent, welcomeText),lines(0)
 {
+    myTimerId = 0;
     //set the Python Prompt
     setNormalPrompt(true);
 
     //redestration
     init_redestration();
+    set_socket_nonblock(::parent);
     getAllCommandList();
+    getAllHistoryList();
 }
 char save_error_type[1024], save_error_info[1024];
 
@@ -82,6 +88,7 @@ char save_error_type[1024], save_error_info[1024];
 QSimConsole::~QSimConsole()
 {
     destroy_redestration();
+    printHistoryToFile();
 }
 
 //Call the Python interpreter to execute the command
@@ -90,13 +97,32 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
 {
     *res = 0;
     QConsole::interpretCommand(command, res);
-    char* cmd = command.toLatin1().data();
+    if(command == "") {
+        append("");
+        displayPrompt();
+        return "";
+    }
 
-    set_socket_nonblock(::parent);
-    exec_command(cmd);
-    append("");
-    setTextColor(QColor("blue"));
-    myTimerId = startTimer(300);
+    if(command == QString(tr("history"))) {
+        printHistory();
+        append(resultString);
+        displayPrompt();
+        return "";
+    }
+
+    if(0 == myTimerId) {
+        char* cmd = command.toLatin1().data();
+        exec_process_over = 0;
+        exec_command(cmd);
+        append("");
+        setTextColor(QColor("blue"));
+        myTimerId = startTimer(300);
+    }
+    else {
+        append("");
+        displayPrompt();
+        return "";
+    }
     return "";
 }
 
@@ -137,7 +163,49 @@ void QSimConsole::timerEvent(QTimerEvent *event)
     }
 }
 
-void QSimConsole::getAllCommandList()
-{
-    all_command_list << "ls" << "uname -a" << "ll" << "who" << "whoami" << "whoareyou";
+void QSimConsole::getAllCommandList() {
+    QFile command_file(QString(tr(".command")));
+    if(!command_file.open(QIODevice::ReadWrite)) {
+        qDebug() << "getAllCommandList ### ERROR ###\n";
+        return;
+    }
+
+    QTextStream infile(&command_file);
+    QString command_string = infile.readAll();
+
+    all_command_list = command_string.split("\n");
+    command_file.close();
+}
+
+void QSimConsole::getAllHistoryList() {
+    QFile history_file(QString(tr(".history")));
+    if(!history_file.open(QIODevice::ReadWrite)) {
+         qDebug() << "getAllCommandList ### ERROR ###\n";
+         return;
+     }
+
+     QTextStream infile(&history_file);
+     QString history_string = infile.readAll();
+
+     all_history_list = history_string.split("\n");
+     history = all_history_list;
+     historyIndex = history.count();
+     history_file.close();
+}
+
+void QSimConsole::printHistoryToFile() {
+    QFile history_file(QString(tr(".history")));
+    if(!history_file.open(QIODevice::WriteOnly)) {
+         qDebug() << "getAllCommandList ### ERROR ###\n";
+         return;
+     }
+
+    QTextStream outfile(&history_file);
+
+    for(QStringList::Iterator it = history.begin(); it != history.end(); ++it) {
+        if("" != *it) {
+            outfile << *it << "\n";
+        }
+    }
+    history_file.close();
 }

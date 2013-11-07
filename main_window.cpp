@@ -1,6 +1,7 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 #include "sim_application.h"
+#include "open_command_line_window_dialog.h"
 #include <QLabel>
 #include <QHBoxLayout>
 
@@ -17,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setFileMenu();
     setToolsMenu();
+
+    command_line_window = NULL;
 }
 
 void MainWindow::setFileMenu(void) {
@@ -74,5 +77,6 @@ void MainWindow::init_StatusBar(void) {
     z->setText(tr("baby baby"));
 }
 MainWindow::~MainWindow() {
+    delete command_line_window;
     delete main_ui_;
 }
