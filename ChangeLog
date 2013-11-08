@@ -1,3 +1,229 @@
+diff --git a/open_command_line_window_dialog.cpp b/open_command_line_window_dialog.cpp
+index 2a2d588..705454a 100644
+--- a/open_command_line_window_dialog.cpp
++++ b/open_command_line_window_dialog.cpp
+@@ -16,7 +16,7 @@ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+ }
+ 
+ OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
+-    console->~QSimConsole();
++    delete console;
+     delete layout;
+ }
+ 
+diff --git a/qconsole.cpp b/qconsole.cpp
+index d51f619..206f4ab 100644
+--- a/qconsole.cpp
++++ b/qconsole.cpp
+@@ -383,11 +383,11 @@ void QConsole::setHome(bool select)
+ {
+         QTextCursor cursor = textCursor();
+         cursor.movePosition(QTextCursor::StartOfBlock, select ? QTextCursor::KeepAnchor :
+-                                                                                                                        QTextCursor::MoveAnchor);
++                                                    QTextCursor::MoveAnchor);
+         if(textCursor().blockNumber() == promptParagraph)
+         {
+-            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :                                                                                                            QTextCursor::MoveAnchor,
+-                                                    promptLength);
++            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :
++                                                    QTextCursor::MoveAnchor, promptLength);
+         }
+         setTextCursor(cursor);
+ }
+@@ -438,6 +438,7 @@ void QConsole::keyPressEvent( QKeyEvent *e )
+     // control is pressed
+     if ( (e->modifiers() & Qt::ControlModifier) && (e->key() == Qt::Key_C) )
+     {
++/*
+         if ( isSelectionInEditionZone())
+         {
+             //If Ctrl + C pressed, then undo the current commant
+@@ -449,7 +450,10 @@ void QConsole::keyPressEvent( QKeyEvent *e )
+             copy();
+             return;
+         }
+-
++*/
++        if(isInEditionZone()) {
++            cancleTheRunningProcess();
++        }
+     }
+     else {
+         switch (e->key()) {
+@@ -476,6 +480,7 @@ void QConsole::keyPressEvent( QKeyEvent *e )
+ 
+         case Qt::Key_Home:
+             setHome(e->modifiers() & Qt::ShiftModifier);
++            return;
+         case Qt::Key_Down:
+             if (isInEditionZone())
+             {
+@@ -490,8 +495,14 @@ void QConsole::keyPressEvent( QKeyEvent *e )
+             return;
+ 
+         //Default behaviour
+-        case Qt::Key_End:
+-        case Qt::Key_Left:
++        case Qt::Key_End: break;
++        case Qt::Key_Left: {
++            QTextCursor cursor = textCursor();
++            if(((cursor.blockNumber()) != promptParagraph) || (cursor.columnNumber() <= promptLength)) {
++                return;
++            }
++            break;
++        }
+         case Qt::Key_Right:
+             break;
+ 
+@@ -706,7 +717,6 @@ void QConsole::mousePressEvent(QMouseEvent* event)
+         QTextEdit::mousePressEvent(event);
+ }
+ 
+-
+ //Redefinition of the dropEvent to have a copy paste
+ //instead of a cut paste when copying out of the
+ //editable zone
+@@ -831,3 +841,5 @@ void QConsole::correctPathName(QString& pathName)
+                 pathName.replace('\\', tr("/"));
+         }
+ }
++
++void QConsole::cancleTheRunningProcess() {}
+diff --git a/qconsole.h b/qconsole.h
+index 2ab51d1..96190cb 100644
+--- a/qconsole.h
++++ b/qconsole.h
+@@ -203,7 +203,7 @@ protected:
+         //the returned prefix is useful to complete "sub-commands"
+         virtual QStringList suggestCommand(const QString &cmd, QString &prefix);
+ 
+-
++        virtual void cancleTheRunningProcess();
+ public Q_SLOTS:
+         //Contextual menu slots
+         void cut();
+diff --git a/qsim_console.cpp b/qsim_console.cpp
+index f29abea..d4852e7 100644
+--- a/qsim_console.cpp
++++ b/qsim_console.cpp
+@@ -104,6 +104,7 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
+     }
+ 
+     if(command == QString(tr("history"))) {
++        setTextColor(QColor("blue"));
+         printHistory();
+         append(resultString);
+         displayPrompt();
+@@ -148,19 +149,20 @@ void QSimConsole::timerEvent(QTimerEvent *event)
+     if(event->timerId() == myTimerId) {
+         char* buffer = get_output();
+         insertPlainText(buffer);
++
++        if(exec_process_over) {
++            killTimer(myTimerId);
++            myTimerId = 0;
++
++            moveCursor(QTextCursor::End);
++            //Display the prompt again
++            displayPrompt();
++            return;
++        }
+     }
+     else {
+         QWidget::timerEvent(event);
+-    }
+-    if(exec_process_over) {
+-        killTimer(myTimerId);
+-        myTimerId = 0;
+-
+-        moveCursor(QTextCursor::End);
+-        //Display the prompt again
+-        displayPrompt();
+-        return;
+-    }
++    }  
+ }
+ 
+ void QSimConsole::getAllCommandList() {
+@@ -209,3 +211,7 @@ void QSimConsole::printHistoryToFile() {
+     }
+     history_file.close();
+ }
++
++void QSimConsole::cancleTheRunningProcess() {
++    kill_exec_process();
++}
+diff --git a/qsim_console.h b/qsim_console.h
+index caa38af..af646e5 100644
+--- a/qsim_console.h
++++ b/qsim_console.h
+@@ -55,6 +55,7 @@ protected:
+     void setNormalPrompt(bool display) { setPrompt("simics# ", display); }
+     void setMultilinePrompt(bool display) { setPrompt("...", display); }
+     void timerEvent(QTimerEvent *event);
++    void cancleTheRunningProcess();
+ 
+ private:
+     void getAllCommandList();
+diff --git a/tsh_if.c b/tsh_if.c
+index c0ce2f5..989dbe9 100644
+--- a/tsh_if.c
++++ b/tsh_if.c
+@@ -8,6 +8,8 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <fcntl.h>
++#include <signal.h>
++#include <sys/types.h>
+ #include "tsh_if.h"
+ 
+ static char* output_buffer = NULL;
+@@ -51,3 +53,12 @@ char* get_output() {
+     }
+     return output_buffer;
+ }
++
++void kill_exec_process() {
++    if(0 != sub_process_id) {
++        if(kill(sub_process_id, SIGINT) < 0) {
++            perror("kill sub_process_id");
++            return;
++        }
++    }
++}
+diff --git a/tsh_if.h b/tsh_if.h
+index b28c132..262156e 100644
+--- a/tsh_if.h
++++ b/tsh_if.h
+@@ -10,12 +10,14 @@
+ #define MAX_BUFFERSIZE 4096
+ extern int exec_process_over;
+ extern int parent;
++extern int sub_process_id;
+ 
+ int init_redestration();
+ int destroy_redestration();
+ int set_socket_nonblock(int fd);
+ int exec_command(char* cmd);
+ char* get_output();
++void kill_exec_process();
+ 
+ #endif
+ 
+=====================================================
+commit afc19e1cbd40e6a297b3548c01bf9e9b604f58e4
+Author: durd <durd07@gmail.com>
+Date:   Thu Nov 7 17:32:51 2013 +0800
+
+    change history and commands
+    
+    1. read from file of history when command_line_window open;
+    2. write history to file when sim-qt's main_window is closed;
+    3. Bug fix:
+    	a.the color of command_line_window changed
+    	b.delete main_window_tools_slots file
+    	c.delete extera space of a command
+
 diff --git a/main_window.cpp b/main_window.cpp
 index 2907d44..553f406 100644
 --- a/main_window.cpp

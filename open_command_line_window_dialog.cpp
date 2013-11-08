@@ -16,7 +16,7 @@ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
 }
 
 OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
-    console->~QSimConsole();
+    delete console;
     delete layout;
 }
 

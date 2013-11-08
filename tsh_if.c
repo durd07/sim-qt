@@ -8,6 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
+#include <sys/types.h>
 #include "tsh_if.h"
 
 static char* output_buffer = NULL;
@@ -50,4 +52,13 @@ char* get_output() {
         return NULL;
     }
     return output_buffer;
+}
+
+void kill_exec_process() {
+    if(0 != sub_process_id) {
+        if(kill(sub_process_id, SIGINT) < 0) {
+            perror("kill sub_process_id");
+            return;
+        }
+    }
 }

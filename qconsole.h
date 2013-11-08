@@ -203,7 +203,7 @@ protected:
         //the returned prefix is useful to complete "sub-commands"
         virtual QStringList suggestCommand(const QString &cmd, QString &prefix);
 
-
+        virtual void cancleTheRunningProcess();
 public Q_SLOTS:
         //Contextual menu slots
         void cut();

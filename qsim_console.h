@@ -55,6 +55,7 @@ protected:
     void setNormalPrompt(bool display) { setPrompt("simics# ", display); }
     void setMultilinePrompt(bool display) { setPrompt("...", display); }
     void timerEvent(QTimerEvent *event);
+    void cancleTheRunningProcess();
 
 private:
     void getAllCommandList();

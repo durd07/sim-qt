@@ -104,6 +104,7 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
     }
 
     if(command == QString(tr("history"))) {
+        setTextColor(QColor("blue"));
         printHistory();
         append(resultString);
         displayPrompt();
@@ -148,19 +149,20 @@ void QSimConsole::timerEvent(QTimerEvent *event)
     if(event->timerId() == myTimerId) {
         char* buffer = get_output();
         insertPlainText(buffer);
+
+        if(exec_process_over) {
+            killTimer(myTimerId);
+            myTimerId = 0;
+
+            moveCursor(QTextCursor::End);
+            //Display the prompt again
+            displayPrompt();
+            return;
+        }
     }
     else {
         QWidget::timerEvent(event);
-    }
-    if(exec_process_over) {
-        killTimer(myTimerId);
-        myTimerId = 0;
-
-        moveCursor(QTextCursor::End);
-        //Display the prompt again
-        displayPrompt();
-        return;
-    }
+    }  
 }
 
 void QSimConsole::getAllCommandList() {
@@ -208,4 +210,8 @@ void QSimConsole::printHistoryToFile() {
         }
     }
     history_file.close();
+}
+
+void QSimConsole::cancleTheRunningProcess() {
+    kill_exec_process();
 }

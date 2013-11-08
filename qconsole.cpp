@@ -383,11 +383,11 @@ void QConsole::setHome(bool select)
 {
         QTextCursor cursor = textCursor();
         cursor.movePosition(QTextCursor::StartOfBlock, select ? QTextCursor::KeepAnchor :
-                                                                                                                        QTextCursor::MoveAnchor);
+                                                    QTextCursor::MoveAnchor);
         if(textCursor().blockNumber() == promptParagraph)
         {
-            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :                                                                                                            QTextCursor::MoveAnchor,
-                                                    promptLength);
+            cursor.movePosition(QTextCursor::Right, select ? QTextCursor::KeepAnchor :
+                                                    QTextCursor::MoveAnchor, promptLength);
         }
         setTextCursor(cursor);
 }
@@ -438,6 +438,7 @@ void QConsole::keyPressEvent( QKeyEvent *e )
     // control is pressed
     if ( (e->modifiers() & Qt::ControlModifier) && (e->key() == Qt::Key_C) )
     {
+/*
         if ( isSelectionInEditionZone())
         {
             //If Ctrl + C pressed, then undo the current commant
@@ -449,7 +450,10 @@ void QConsole::keyPressEvent( QKeyEvent *e )
             copy();
             return;
         }
-
+*/
+        if(isInEditionZone()) {
+            cancleTheRunningProcess();
+        }
     }
     else {
         switch (e->key()) {
@@ -476,6 +480,7 @@ void QConsole::keyPressEvent( QKeyEvent *e )
 
         case Qt::Key_Home:
             setHome(e->modifiers() & Qt::ShiftModifier);
+            return;
         case Qt::Key_Down:
             if (isInEditionZone())
             {
@@ -490,8 +495,14 @@ void QConsole::keyPressEvent( QKeyEvent *e )
             return;
 
         //Default behaviour
-        case Qt::Key_End:
-        case Qt::Key_Left:
+        case Qt::Key_End: break;
+        case Qt::Key_Left: {
+            QTextCursor cursor = textCursor();
+            if(((cursor.blockNumber()) != promptParagraph) || (cursor.columnNumber() <= promptLength)) {
+                return;
+            }
+            break;
+        }
         case Qt::Key_Right:
             break;
 
@@ -706,7 +717,6 @@ void QConsole::mousePressEvent(QMouseEvent* event)
         QTextEdit::mousePressEvent(event);
 }
 
-
 //Redefinition of the dropEvent to have a copy paste
 //instead of a cut paste when copying out of the
 //editable zone
@@ -831,3 +841,5 @@ void QConsole::correctPathName(QString& pathName)
                 pathName.replace('\\', tr("/"));
         }
 }
+
+void QConsole::cancleTheRunningProcess() {}
