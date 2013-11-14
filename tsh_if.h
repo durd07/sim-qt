@@ -9,7 +9,7 @@
 
 #define MAX_BUFFERSIZE 4096
 extern int exec_process_over;
-extern int parent;
+extern int parent, child;
 extern int sub_process_id;
 
 int init_redestration();

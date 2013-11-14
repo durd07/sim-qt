@@ -44,6 +44,10 @@ extern "C" {
 #include <QFile>
 #include <QTextStream>
 
+
+
+
+
 QString resultString;
 
 void QSimConsole::printHistory()
@@ -68,6 +72,10 @@ QSimConsole *QSimConsole::getInstance(QWidget *parent, const QString& welcomeTex
     return theInstance;
 }
 
+
+
+
+
 //QTcl console constructor (init the QTextEdit & the attributes)
 QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
         QConsole(parent, welcomeText),lines(0)
@@ -78,9 +86,12 @@ QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
 
     //redestration
     init_redestration();
-    set_socket_nonblock(::parent);
+    //set_socket_nonblock(::parent);
     getAllCommandList();
     getAllHistoryList();
+//    myTimerId = startTimer(300);
+
+
 }
 char save_error_type[1024], save_error_info[1024];
 
@@ -111,19 +122,20 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
         return "";
     }
 
-    if(0 == myTimerId) {
-        char* cmd = command.toLatin1().data();
+//    if(0 == myTimerId) {
+        QString temp = command + "\n";
+        char* cmd = temp.toLatin1().data();
         exec_process_over = 0;
         exec_command(cmd);
         append("");
         setTextColor(QColor("blue"));
-        myTimerId = startTimer(300);
-    }
-    else {
-        append("");
-        displayPrompt();
-        return "";
-    }
+        //myTimerId = startTimer(300);
+//    }
+//    else {
+//        append("");
+//        displayPrompt();
+//        return "";
+//    }
     return "";
 }
 
@@ -150,9 +162,10 @@ void QSimConsole::timerEvent(QTimerEvent *event)
         char* buffer = get_output();
         insertPlainText(buffer);
 
+//        moveCursor(QTextCursor::End);
         if(exec_process_over) {
-            killTimer(myTimerId);
-            myTimerId = 0;
+//            killTimer(myTimerId);
+//            myTimerId = 0;
 
             moveCursor(QTextCursor::End);
             //Display the prompt again
@@ -215,3 +228,5 @@ void QSimConsole::printHistoryToFile() {
 void QSimConsole::cancleTheRunningProcess() {
     kill_exec_process();
 }
+
+

@@ -258,13 +258,14 @@ void QConsole::displayPrompt()
     //displays the prompt
     setTextColor(cmdColor_);
     QTextCursor cur = textCursor();
-    cur.insertText(prompt);
+    //cur.insertText(prompt);
     cur.movePosition(QTextCursor::EndOfLine);
     setTextCursor(cur);
     //Saves the paragraph number of the prompt
     promptParagraph = cur.blockNumber();
     //Enable undo/redo for the actual command
     setUndoRedoEnabled(true);
+
 }
 
 void QConsole::setFont(const QFont& f) {

@@ -1,4 +1,200 @@
 diff --git a/open_command_line_window_dialog.cpp b/open_command_line_window_dialog.cpp
+index 705454a..3723434 100644
+--- a/open_command_line_window_dialog.cpp
++++ b/open_command_line_window_dialog.cpp
+@@ -1,6 +1,32 @@
+ #include "open_command_line_window_dialog.h"
+ #include "qsim_console.h"
++#include "QDebug"
+ #include <QVBoxLayout>
++extern "C" {
++#include "tsh_if.h"
++}
++
++#include <QThread>
++
++class GetOutputThread : public QThread {
++public:
++    GetOutputThread(QSimConsole* c) {
++      console = c;
++    }
++protected:
++    void run() {
++        while(1) {
++            char *buffer = NULL;
++            buffer = get_output();
++            console->insertPlainText(buffer);
++
++           console->moveCursor(QTextCursor::End);
++        }
++    }
++private:
++    QSimConsole *console ;
++};
++
+ 
+ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+     QWidget(parent) {
+@@ -13,6 +39,10 @@ OpenCommandLineWindowDialog::OpenCommandLineWindowDialog(QWidget *parent) :
+     layout = new QVBoxLayout;
+     layout->addWidget(console);
+     this->setLayout(layout);
++
++    GetOutputThread *thread = new GetOutputThread(console);
++    thread->start();
++
+ }
+ 
+ OpenCommandLineWindowDialog::~OpenCommandLineWindowDialog() {
+diff --git a/qconsole.cpp b/qconsole.cpp
+index 206f4ab..a80e8ce 100644
+--- a/qconsole.cpp
++++ b/qconsole.cpp
+@@ -258,13 +258,14 @@ void QConsole::displayPrompt()
+     //displays the prompt
+     setTextColor(cmdColor_);
+     QTextCursor cur = textCursor();
+-    cur.insertText(prompt);
++    //cur.insertText(prompt);
+     cur.movePosition(QTextCursor::EndOfLine);
+     setTextCursor(cur);
+     //Saves the paragraph number of the prompt
+     promptParagraph = cur.blockNumber();
+     //Enable undo/redo for the actual command
+     setUndoRedoEnabled(true);
++
+ }
+ 
+ void QConsole::setFont(const QFont& f) {
+diff --git a/qsim_console.cpp b/qsim_console.cpp
+index d4852e7..876ec98 100644
+--- a/qsim_console.cpp
++++ b/qsim_console.cpp
+@@ -44,6 +44,10 @@ extern "C" {
+ #include <QFile>
+ #include <QTextStream>
+ 
++
++
++
++
+ QString resultString;
+ 
+ void QSimConsole::printHistory()
+@@ -68,6 +72,10 @@ QSimConsole *QSimConsole::getInstance(QWidget *parent, const QString& welcomeTex
+     return theInstance;
+ }
+ 
++
++
++
++
+ //QTcl console constructor (init the QTextEdit & the attributes)
+ QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
+         QConsole(parent, welcomeText),lines(0)
+@@ -78,9 +86,12 @@ QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
+ 
+     //redestration
+     init_redestration();
+-    set_socket_nonblock(::parent);
++    //set_socket_nonblock(::parent);
+     getAllCommandList();
+     getAllHistoryList();
++//    myTimerId = startTimer(300);
++
++
+ }
+ char save_error_type[1024], save_error_info[1024];
+ 
+@@ -111,19 +122,20 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
+         return "";
+     }
+ 
+-    if(0 == myTimerId) {
+-        char* cmd = command.toLatin1().data();
++//    if(0 == myTimerId) {
++        QString temp = command + "\n";
++        char* cmd = temp.toLatin1().data();
+         exec_process_over = 0;
+         exec_command(cmd);
+         append("");
+         setTextColor(QColor("blue"));
+-        myTimerId = startTimer(300);
+-    }
+-    else {
+-        append("");
+-        displayPrompt();
+-        return "";
+-    }
++        //myTimerId = startTimer(300);
++//    }
++//    else {
++//        append("");
++//        displayPrompt();
++//        return "";
++//    }
+     return "";
+ }
+ 
+@@ -150,9 +162,10 @@ void QSimConsole::timerEvent(QTimerEvent *event)
+         char* buffer = get_output();
+         insertPlainText(buffer);
+ 
++//        moveCursor(QTextCursor::End);
+         if(exec_process_over) {
+-            killTimer(myTimerId);
+-            myTimerId = 0;
++//            killTimer(myTimerId);
++//            myTimerId = 0;
+ 
+             moveCursor(QTextCursor::End);
+             //Display the prompt again
+@@ -215,3 +228,5 @@ void QSimConsole::printHistoryToFile() {
+ void QSimConsole::cancleTheRunningProcess() {
+     kill_exec_process();
+ }
++
++
+diff --git a/tsh_if.c b/tsh_if.c
+index 989dbe9..8f9a97f 100644
+--- a/tsh_if.c
++++ b/tsh_if.c
+@@ -48,7 +48,7 @@ char* get_output() {
+     memset(output_buffer, 0, sizeof(char) * MAX_BUFFERSIZE);
+     if(read(parent, output_buffer, sizeof(char) * MAX_BUFFERSIZE) < 0)
+     {
+-        perror("read");
++        //perror("read");
+         return NULL;
+     }
+     return output_buffer;
+diff --git a/tsh_if.h b/tsh_if.h
+index 262156e..94d20fe 100644
+--- a/tsh_if.h
++++ b/tsh_if.h
+@@ -9,7 +9,7 @@
+ 
+ #define MAX_BUFFERSIZE 4096
+ extern int exec_process_over;
+-extern int parent;
++extern int parent, child;
+ extern int sub_process_id;
+ 
+ int init_redestration();
+=====================================================
+commit 18b21988f8a54398803637d6f8f48e3da186d65f
+Author: durd <durd07@gmail.com>
+Date:   Fri Nov 8 15:53:35 2013 +0800
+
+    add kill subprocess and fix some bugs
+    
+    1. fix the bug when the cursor moved left, it can go through the preopt;
+    2. fix the bug when selected some text and move down until out the whole
+    window, it will print very more preport;
+    3. fix the bug when Home is pressed, all words are missing;
+    4. add the function to kill the executing process when it is necessary;
+
+diff --git a/open_command_line_window_dialog.cpp b/open_command_line_window_dialog.cpp
 index 2a2d588..705454a 100644
 --- a/open_command_line_window_dialog.cpp
 +++ b/open_command_line_window_dialog.cpp

@@ -48,7 +48,7 @@ char* get_output() {
     memset(output_buffer, 0, sizeof(char) * MAX_BUFFERSIZE);
     if(read(parent, output_buffer, sizeof(char) * MAX_BUFFERSIZE) < 0)
     {
-        perror("read");
+        //perror("read");
         return NULL;
     }
     return output_buffer;
