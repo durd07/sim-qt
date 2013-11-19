@@ -145,7 +145,10 @@ public:
         // @}
 
         void correctPathName(QString& pathName);
-
+signals:
+        void getData(const QByteArray &data);
+public slots:
+        virtual void writeData(const QByteArray &data);
 private:
         void dropEvent( QDropEvent * event);
         void dragMoveEvent( QDragMoveEvent * event);

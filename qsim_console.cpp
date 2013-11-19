@@ -82,9 +82,16 @@ QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
     getAllCommandList();
     getAllHistoryList();
 //    myTimerId = startTimer(300);
-
+    connect(this, SIGNAL(getData(QByteArray)), this, SLOT(writeData(QByteArray)));
 
 }
+
+void QSimConsole::writeData(const QByteArray &data) {
+    perror(data.data());
+    char* aaa = (char*)data.data();
+    exec_command(aaa);
+}
+
 char save_error_type[1024], save_error_info[1024];
 
 //Desctructor
@@ -117,7 +124,7 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
     }
 */
 //    if(0 == myTimerId) {
-        QString temp = command + "\n";
+/*        QString temp = command + "\n";
         char* cmd = temp.toLatin1().data();
         exec_process_over = 0;
         exec_command(cmd);
@@ -127,10 +134,10 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
         cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, promptLength);
         cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
         cursor.removeSelectedText();
-
+*/
 //        QTextEdit::keyPressEvent(QKeyEvent)
 //        append("");
-        setTextColor(QColor("blue"));
+//        setTextColor(QColor("blue"));
         //myTimerId = startTimer(300);
 //    }
 //    else {

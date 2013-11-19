@@ -31,6 +31,7 @@
 
 class QSimConsole : public QConsole
 {
+     //Q_OBJECT
 public:
     //destructor
     ~QSimConsole();
@@ -62,7 +63,8 @@ private:
     void getAllHistoryList();
 public:
     void printHistoryToFile();
-
+public slots:
+    void writeData(const QByteArray &data);
 private:
     //The instance
     static QSimConsole *theInstance;

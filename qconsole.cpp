@@ -406,6 +406,9 @@ void QConsole::setHome(bool select)
         setTextCursor(cursor);
 }
 
+void QConsole::writeData(const QByteArray &data) {
+    perror(data.data());
+}
 //Reimplemented key press event
 void QConsole::keyPressEvent( QKeyEvent *e )
 {
@@ -440,6 +443,8 @@ void QConsole::keyPressEvent( QKeyEvent *e )
             }
         }
     }
+    emit getData(e->text().toLocal8Bit());
+    return;
 /*
     // if the cursor out of editing zone put it back first
     if(!isInEditionZone())

@@ -7,7 +7,6 @@
 
 class OpenCommandLineWindowDialog : public QWidget {
     Q_OBJECT
-
 public:
     explicit OpenCommandLineWindowDialog(QWidget *parent = 0);
     ~OpenCommandLineWindowDialog();
