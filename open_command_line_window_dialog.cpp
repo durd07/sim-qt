@@ -1,6 +1,7 @@
 #include "open_command_line_window_dialog.h"
 #include "qsim_console.h"
 #include "QDebug"
+#include "QTextLayout"
 #include <QVBoxLayout>
 extern "C" {
 #include "tsh_if.h"
@@ -16,11 +17,17 @@ public:
 protected:
     void run() {
         while(1) {
+            qRegisterMetaType<QTextCursor>("QTextCursor");
             char *buffer = NULL;
             buffer = get_output();
             console->insertPlainText(buffer);
 
-           console->moveCursor(QTextCursor::End);
+            QTextCursor cur = console->textCursor();
+            cur.movePosition(QTextCursor::EndOfLine);
+            console->setTextCursor(cur);
+
+            //Saves the paragraph number of the prompt
+            console->promptParagraph = cur.blockNumber();
         }
     }
 private:

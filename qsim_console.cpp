@@ -44,10 +44,6 @@ extern "C" {
 #include <QFile>
 #include <QTextStream>
 
-
-
-
-
 QString resultString;
 
 void QSimConsole::printHistory()
@@ -71,10 +67,6 @@ QSimConsole *QSimConsole::getInstance(QWidget *parent, const QString& welcomeTex
     }
     return theInstance;
 }
-
-
-
-
 
 //QTcl console constructor (init the QTextEdit & the attributes)
 QSimConsole::QSimConsole(QWidget *parent, const QString& welcomeText) :
@@ -102,12 +94,14 @@ QSimConsole::~QSimConsole()
     printHistoryToFile();
 }
 
+#include <QKeyEvent>
 //Call the Python interpreter to execute the command
 //retrieve back results using the python internal stdout/err redirectory (see above)
 QString QSimConsole::interpretCommand(const QString &command, int *res)
 {
     *res = 0;
-    QConsole::interpretCommand(command, res);
+//    QConsole::interpretCommand(command, res);
+/*
     if(command == "") {
         append("");
         displayPrompt();
@@ -121,13 +115,21 @@ QString QSimConsole::interpretCommand(const QString &command, int *res)
         displayPrompt();
         return "";
     }
-
+*/
 //    if(0 == myTimerId) {
         QString temp = command + "\n";
         char* cmd = temp.toLatin1().data();
         exec_process_over = 0;
         exec_command(cmd);
-        append("");
+
+        QTextCursor cursor = textCursor();    //Get the current command: we just remove the prompt
+        cursor.movePosition(QTextCursor::StartOfLine);
+        cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, promptLength);
+        cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+        cursor.removeSelectedText();
+
+//        QTextEdit::keyPressEvent(QKeyEvent)
+//        append("");
         setTextColor(QColor("blue"));
         //myTimerId = startTimer(300);
 //    }

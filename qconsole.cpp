@@ -16,7 +16,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
+#include <stdio.h>
 #include "qconsole.h"
 #include <QFile>
 #include <QTextStream>
@@ -92,7 +92,6 @@ PopupCompleter::PopupCompleter(const QStringList& sl, QWidget *parent)
         }
         qDebug() << "sizeHint(): " << listWidget_->sizeHint();
         listWidget_->setFixedSize(listWidget_->sizeHint());
-
 
         QLayout *layout = new QVBoxLayout();
         layout->setSizeConstraint(QLayout::SetFixedSize);
@@ -215,7 +214,8 @@ void QConsole::reset(const QString &welcomeText)
         //init attributes
         historyIndex = 0;
         history.clear();
-        recordedScript.clear();}
+        recordedScript.clear();
+}
 
 //QConsole constructor (init the QTextEdit & the attributes)
 QConsole::QConsole(QWidget *parent, const QString &welcomeText)
@@ -265,7 +265,6 @@ void QConsole::displayPrompt()
     promptParagraph = cur.blockNumber();
     //Enable undo/redo for the actual command
     setUndoRedoEnabled(true);
-
 }
 
 void QConsole::setFont(const QFont& f) {
@@ -285,11 +284,24 @@ QStringList QConsole::suggestCommand(const QString&, QString& prefix)
         prefix = "";
         return QStringList();
 }
-
-#define USE_POPUP_COMPLETER
+extern "C" {
+#include "tsh_if.h"
+}
 //Treat the tab key & autocomplete the current command
 void QConsole::handleTabKeyPress()
 {
+    QString command = getCurrentCommand();
+    command += "\t";
+
+
+    exec_command(command.toLatin1().data());
+
+    QTextCursor cursor = textCursor();    //Get the current command: we just remove the prompt
+    cursor.movePosition(QTextCursor::StartOfLine);
+    cursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, promptLength);
+    cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+    cursor.removeSelectedText();
+/*
         QString command = getCurrentCommand();
         QString commandPrefix;
         QStringList sl = suggestCommand(command, commandPrefix);
@@ -317,6 +329,7 @@ void QConsole::handleTabKeyPress()
 #endif
             }
         }
+*/
 }
 
 // If return pressed, do the evaluation and append the result
@@ -499,7 +512,7 @@ void QConsole::keyPressEvent( QKeyEvent *e )
         case Qt::Key_End: break;
         case Qt::Key_Left: {
             QTextCursor cursor = textCursor();
-            if(((cursor.blockNumber()) != promptParagraph) || (cursor.columnNumber() <= promptLength)) {
+            if(((cursor.blockNumber()) != promptParagraph) || ((cursor.columnNumber() <= promptLength) && (cursor.blockNumber()) == promptParagraph)) {
                 return;
             }
             break;
@@ -540,6 +553,7 @@ QString QConsole::getCurrentCommand()
         cursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
         QString command = cursor.selectedText();
         cursor.clearSelection();
+
         return command.trimmed();
 }
 

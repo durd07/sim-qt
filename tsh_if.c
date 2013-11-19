@@ -41,6 +41,7 @@ int exec_command(char* cmd) {
         perror("write error!");
         return -1;
     }
+    perror(cmd);
     return 0;
 }
 

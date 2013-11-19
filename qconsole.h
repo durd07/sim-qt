@@ -187,6 +187,7 @@ protected:
         QStringList recordedScript;
         // Current history index (needed because afaik QStringList does not have such an index)
         int historyIndex;
+public:
         //Holds the paragraph number of the prompt (useful for multi-line command handling)
         int promptParagraph;
 
