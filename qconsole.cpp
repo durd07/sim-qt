@@ -443,8 +443,7 @@ void QConsole::keyPressEvent( QKeyEvent *e )
             }
         }
     }
-    emit getData(e->text().toLocal8Bit());
-    return;
+
 /*
     // if the cursor out of editing zone put it back first
     if(!isInEditionZone())
@@ -470,24 +469,28 @@ void QConsole::keyPressEvent( QKeyEvent *e )
             return;
         }
 */
-        if(isInEditionZone()) {
-            cancleTheRunningProcess();
-        }
+//        if(isInEditionZone()) {
+//            cancleTheRunningProcess();
+//        }
+        emit getData(e->text().toLocal8Bit());
+        return;
     }
     else {
         switch (e->key()) {
         case Qt::Key_Tab:
-            if(isSelectionInEditionZone())
+/*            if(isSelectionInEditionZone())
             {
-                handleTabKeyPress();
+                //handleTabKeyPress();
+                emit getData(e->text().toLocal8Bit());
             }
             return;
-
+*/
         case Qt::Key_Enter:
         case Qt::Key_Return:
             if (isSelectionInEditionZone())
             {
                     handleReturnKeyPress();
+                    emit getData(e->text().toLocal8Bit());
             }
             // ignore return key
             return;
